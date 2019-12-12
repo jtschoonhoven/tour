@@ -1,0 +1,20 @@
+# directories
+*/**/node_modules/
+*/**/.expo/
+*/**/web-build/
+*/**/web-report/
+
+# files
+*/**/npm-debug.*
+*/**/.DS_Store
+
+# extensions
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# editor
+.vscode
