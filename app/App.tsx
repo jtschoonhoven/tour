@@ -1,19 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+
+import Tour from './components/tours/Tour';
+import TourList from './components/tours/TourList';
+import { ROUTE_NAMES } from './constants';
+
+
+const AppNavigator = createStackNavigator(
+  {
+      [ROUTE_NAMES.HOME]: TourList,
+      [ROUTE_NAMES.TOUR]: Tour,
+  },
+  {
+      initialRouteName: ROUTE_NAMES.HOME,
+  }
+);
+const Home = createAppContainer(AppNavigator);
+
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
-  );
+  return <Home />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
