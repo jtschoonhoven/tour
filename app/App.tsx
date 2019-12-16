@@ -35,32 +35,23 @@ const RootStack = createStackNavigator(
     [ROUTE_NAMES.MODAL]: Modal,
   },
   {
+    initialRouteName: ROUTE_NAMES.MAIN,
     mode: 'modal',
     headerMode: 'none',
-    defaultNavigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
-  },
-);
-
-const AuthSwitch = createSwitchNavigator(
-  {
-    [ROUTE_NAMES.AUTH_LOADING]: AuthLoading,
-    [ROUTE_NAMES.ROOT]: RootStack,
-    [ROUTE_NAMES.AUTH]: AuthNavigator,
-  },
-  {
-    initialRouteName: ROUTE_NAMES.AUTH_LOADING,
   }
 );
 
-const AppContainer = createAppContainer(AuthSwitch);
+// outermost wrapper including authentication screens
+const AppContainer = createAppContainer(
+  createSwitchNavigator(
+    {
+      [ROUTE_NAMES.AUTH_LOADING]: AuthLoading,
+      [ROUTE_NAMES.ROOT]: RootStack,
+      [ROUTE_NAMES.AUTH]: AuthNavigator,
+    },
+    { initialRouteName: ROUTE_NAMES.AUTH_LOADING },
+  )
+);
 
 
 const App: ReactNavFC = () => {

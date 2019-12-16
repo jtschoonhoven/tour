@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, View, Text } from 'react-native';
+import { AsyncStorage, Button, View, Text } from 'react-native';
 
-import { ROUTE_NAMES } from '../../constants';
+import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 import { ReactNavFC, ReactNavProp } from '../../types';
 
 
@@ -45,10 +45,23 @@ const TourList: ReactNavFC<Props> = ({ navigation }) => {
     return (
         <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
             <Text>Home Screen</Text>
-            <Button title="Modal!" onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }></Button>
+            <Button title="Show Modal" onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }></Button>
             { Buttons }
+            <Button title="Logout" onPress={ () => logout(navigation) }></Button>
         </View>
     );
 }
 TourList.navigationOptions = { title: 'Tours' };
 export default TourList;
+
+
+async function logout(navigation: ReactNavProp) {
+    try {
+        await AsyncStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+    }
+    catch (error) {
+        // TODO: show alert
+        throw error;
+    }
+    navigation.navigate(ROUTE_NAMES.LOGIN);
+}
