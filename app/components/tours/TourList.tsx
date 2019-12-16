@@ -1,9 +1,8 @@
 import React from 'react';
 import { Button, View, Text } from 'react-native';
-import { NavigationStackScreenProps } from 'react-navigation-stack';
-import { NavigationScreenProp } from 'react-navigation';
 
 import { ROUTE_NAMES } from '../../constants';
+import { ReactNavFC, ReactNavProp } from '../../types';
 
 
 interface Tour {
@@ -18,7 +17,7 @@ export interface TourScreenProps {
 }
 
 interface Props {
-    navigation: NavigationScreenProp<TourScreenProps>
+    navigation: ReactNavProp<TourScreenProps>
 }
 
 // tmp stub for API
@@ -32,7 +31,7 @@ const toursStub: { tours: Tour[]} = {
 
 
 // navigable list of available tours
-const TourList: React.FC<Props> = ({ navigation }) => {
+const TourList: ReactNavFC<Props> = ({ navigation }) => {
     const Buttons = toursStub.tours.map((tour) => {
         return (
             <Button
@@ -42,11 +41,14 @@ const TourList: React.FC<Props> = ({ navigation }) => {
             />
         );
     });
+    const modal = { title: 'Example modal' };
     return (
         <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
             <Text>Home Screen</Text>
+            <Button title="Modal!" onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }></Button>
             { Buttons }
         </View>
     );
 }
+TourList.navigationOptions = { title: 'Tours' };
 export default TourList;

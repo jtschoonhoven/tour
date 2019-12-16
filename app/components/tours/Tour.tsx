@@ -1,21 +1,29 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { NavigationScreenProp } from 'react-navigation';
 
 import { TourScreenProps } from './TourList';
+import { ReactNavFC, ReactNavProp } from '../../types';
 
 
-interface Props {
-    navigation: NavigationScreenProp<TourScreenProps>
-}
-
-
-const Tour: React.FC<Props> = ({ navigation }) => {
-    const tour = navigation.getParam('tour');
+const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
+    const title = getTourTitle(navigation);
     return (
         <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
-            <Text>Tour Screen #{ tour.id }</Text>
+            <Text>{ title }</Text>
         </View>
     );
 };
+Tour.navigationOptions = ({ navigation }) => {
+    const title = getTourTitle(navigation);
+    return { title };
+}
 export default Tour;
+
+
+/**
+ * Return a human-readable title for this tour.
+ */
+function getTourTitle(navigation: ReactNavProp<TourScreenProps>): string {
+    const tour = navigation.getParam('tour');
+    return `Tour Screen #${ tour.id }`;
+}

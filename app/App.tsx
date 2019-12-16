@@ -4,21 +4,43 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import Tour from './components/tours/Tour';
 import TourList from './components/tours/TourList';
+import Modal from './components/common/modal';
 import { ROUTE_NAMES } from './constants';
+import { ReactNavFC } from './types';
 
 
-const AppNavigator = createStackNavigator(
+const MainStack = createStackNavigator(
   {
-      [ROUTE_NAMES.HOME]: TourList,
-      [ROUTE_NAMES.TOUR]: Tour,
+    [ROUTE_NAMES.HOME]: TourList,
+    [ROUTE_NAMES.TOUR]: Tour,
+  },
+  { initialRouteName: ROUTE_NAMES.HOME },
+);
+
+const RootStack = createStackNavigator(
+  {
+    [ROUTE_NAMES.MAIN]: MainStack,
+    [ROUTE_NAMES.MODAL]: Modal,
   },
   {
-      initialRouteName: ROUTE_NAMES.HOME,
-  }
+    mode: 'modal',
+    headerMode: 'none',
+    defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  },
 );
-const Home = createAppContainer(AppNavigator);
+
+const AppContainer = createAppContainer(RootStack);
 
 
-export default function App() {
-  return <Home />;
+const App: ReactNavFC = () => {
+  return <AppContainer />;
 }
+export default App;
