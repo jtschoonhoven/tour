@@ -13,5 +13,5 @@ export const ROUTE_NAMES = {
 
 // All keys stored in system storage
 export const STORAGE_KEYS = {
-    USER_TOKEN: 'userToken',
+    USER_TOKEN: '@tour:userToken',
 } as const;

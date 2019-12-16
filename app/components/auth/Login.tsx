@@ -1,6 +1,7 @@
 import React from 'react';
 import { AsyncStorage, Button, Text, View } from 'react-native';
 
+import LoginWithGoogleBtn from './LoginWithGoogleBtn';
 import { ReactNavFC, ReactNavProp } from '../../types';
 import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 
@@ -9,6 +10,7 @@ const Login: ReactNavFC = ({ navigation }) => {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Login</Text>
             <Button title="Login" onPress={ () => { login(navigation) } }></Button>
+            <LoginWithGoogleBtn navigation={ navigation } />
         </View>
     );
 };
