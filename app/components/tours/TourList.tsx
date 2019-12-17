@@ -1,5 +1,6 @@
 import React from 'react';
-import { AsyncStorage, Button, View, Text } from 'react-native';
+import { AsyncStorage } from 'react-native';
+import { Button, Content, Header, Text } from 'native-base';
 
 import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 import { ReactNavFC, ReactNavProp } from '../../types';
@@ -16,8 +17,8 @@ export interface TourScreenProps {
     readonly tour: Tour;
 }
 
-interface Props {
-    navigation: ReactNavProp<TourScreenProps>
+interface NavParams {
+    tour: Tour;
 }
 
 // tmp stub for API
@@ -31,24 +32,25 @@ const toursStub: { tours: Tour[]} = {
 
 
 // navigable list of available tours
-const TourList: ReactNavFC<Props> = ({ navigation }) => {
+const TourList: ReactNavFC<{}, NavParams> = ({ navigation }) => {
     const Buttons = toursStub.tours.map((tour) => {
         return (
-            <Button
-                key={ tour.id }
-                title={ tour.title }
-                onPress={ () => navigation.navigate(ROUTE_NAMES.TOUR, { tour }) }
-            />
+            <Button key={ tour.id } onPress={ () => navigation.navigate(ROUTE_NAMES.TOUR, { tour }) }>
+                <Text>{ tour.title }</Text>
+            </Button>
         );
     });
     const modal = { title: 'Example modal' };
     return (
-        <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
-            <Text>Home Screen</Text>
-            <Button title="Show Modal" onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }></Button>
+        <Content>
+            <Button onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }>
+                <Text>{ 'Show modal' }</Text>
+            </Button>
             { Buttons }
-            <Button title="Logout" onPress={ () => logout(navigation) }></Button>
-        </View>
+            <Button onPress={ () => logout(navigation) }>
+                <Text>{ 'Logout' }</Text>
+            </Button>
+        </Content>
     );
 }
 TourList.navigationOptions = { title: 'Tours' };

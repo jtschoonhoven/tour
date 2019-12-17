@@ -20,7 +20,9 @@
   "dependencies": {
     "D": "^1.0.0",
     "expo": "~36.0.0",
+    "expo-font": "~8.0.0",
     "expo-google-app-auth": "^8.0.0",
+    "expo-module-scripts": "^1.1.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
@@ -38,6 +40,7 @@
     "babel-preset-expo": "~8.0.0",
     "expo": "^36.0.0",
     "expo-cli": "^3.11.1",
+    "native-base": "^2.13.8",
     "typescript": "~3.6.3"
   }
 }

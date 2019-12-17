@@ -6,6 +6,7 @@ import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 import { ReactNavProp, ReactNavFC } from '../../types';
 
 
+// API Docs: https://docs.expo.io/versions/v36.0.0/sdk/google
 const GOOGLE_AUTH_CONFIG = {
     clientId: 'unused-but-required',
     iosClientId: '269918202494-8e7ip5ui7m21f9j6mon4dfk191r5fesm.apps.googleusercontent.com',
