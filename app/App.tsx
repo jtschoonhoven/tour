@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import * as Font from 'expo-font';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
+import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
 import { Ionicons } from '@expo/vector-icons';
 import { Container } from 'native-base';
 
@@ -54,7 +55,7 @@ const RootStack = createStackNavigator(
 
 // outermost wrapper including authentication screens
 const AppContainer = createAppContainer(
-  createSwitchNavigator(
+  createAnimatedSwitchNavigator(
     {
       [ROUTE_NAMES.AUTH_LOADING]: AuthLoading,
       [ROUTE_NAMES.ROOT]: RootStack,
