@@ -39,7 +39,7 @@
     "@types/react-native": "~0.60.23",
     "babel-preset-expo": "~8.0.0",
     "expo": "^36.0.0",
-    "expo-cli": "^3.11.1",
+    "expo-cli": "^3.11.3",
     "native-base": "^2.13.8",
     "typescript": "~3.6.3"
   }
