@@ -10,7 +10,7 @@ import { Container } from 'native-base';
 import { ROUTE_NAMES } from './constants';
 import { ReactNavFC } from './types';
 import Tour from './components/tours/Tour';
-import TourList from './components/tours/TourList';
+import TourList from './components/tours/Tours';
 import Modal from './components/common/Modal';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';

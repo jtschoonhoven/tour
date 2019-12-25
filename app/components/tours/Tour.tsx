@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { TourScreenProps } from './TourList';
+import { TourScreenProps } from './Tours';
 import { ReactNavFC, ReactNavProp } from '../../types';
 
 
