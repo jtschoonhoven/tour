@@ -1,3 +1,10 @@
+import { Platform } from 'react-native';
+
+
+// Platform OS helpers
+export const IS_ANDROID = Platform.OS === 'android';
+export const IS_IOS = Platform.OS === 'ios';
+
 // All routes used by react-navigation
 export const ROUTE_NAMES = {
     ROOT: 'Root',
