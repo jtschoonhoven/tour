@@ -1,70 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import * as Font from 'expo-font';
 import { createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createStackNavigator } from 'react-navigation-stack';
-import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
 import { Ionicons } from '@expo/vector-icons';
 import { Container } from 'native-base';
 
 
-import { ROUTE_NAMES } from './constants';
 import { ReactNavFC } from './types';
-import Tour from './components/tours/Tour';
-import TourList from './components/tours/Tours';
-import Modal from './components/common/Modal';
-import Login from './components/auth/Login';
-import Signup from './components/auth/Signup';
-import AuthLoading from './components/auth/AuthLoading';
 import AppLoading from './components/common/AppLoading';
-import NavHeader from './components/common/NavHeader';
+import AppNavigator from './navigation';
 
 
-// primary routes used in the app, excepting modals and authentication
-const MainStack = createStackNavigator(
-  {
-    [ROUTE_NAMES.HOME]: TourList,
-    [ROUTE_NAMES.TOUR]: Tour,
-  },
-  {
-    initialRouteName: ROUTE_NAMES.HOME,
-    defaultNavigationOptions: {
-      header: NavHeader,
-    },
-  },
-);
-
-// authentication routes for login and signup
-const AuthNavigator = createBottomTabNavigator({
-  [ROUTE_NAMES.LOGIN]: Login,
-  [ROUTE_NAMES.SIGNUP]: Signup,
-});
-
-// stack including all routes except authentication
-const RootStack = createStackNavigator(
-  {
-    [ROUTE_NAMES.MAIN]: MainStack,
-    [ROUTE_NAMES.MODAL]: Modal,
-  },
-  {
-    initialRouteName: ROUTE_NAMES.MAIN,
-    mode: 'modal',
-    headerMode: 'none',
-  }
-);
-
-// outermost wrapper including authentication screens
-const AppContainer = createAppContainer(
-  createAnimatedSwitchNavigator(
-    {
-      [ROUTE_NAMES.AUTH_LOADING]: AuthLoading,
-      [ROUTE_NAMES.ROOT]: RootStack,
-      [ROUTE_NAMES.AUTH]: AuthNavigator,
-    },
-    { initialRouteName: ROUTE_NAMES.AUTH_LOADING },
-  )
-);
-
+const AppContainer = createAppContainer(AppNavigator);
 
 /**
  * Main app. Displays AppLoading view until all assets are loaded.
