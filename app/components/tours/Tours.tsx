@@ -20,7 +20,7 @@ export interface TourScreenProps {
 const Tours: ReactNavFC = ({ navigation }) => {
     const modal = { title: 'Example modal' };
     return (
-        <Content>
+        <View style={{ flex: 1 }}>
             <TourList navigation={ navigation } />
             <Button onPress={ () => navigation.navigate(ROUTE_NAMES.MODAL, { modal }) }>
                 <Text>{ 'Launch example modal' }</Text>
@@ -28,7 +28,7 @@ const Tours: ReactNavFC = ({ navigation }) => {
             <Button onPress={ () => logout(navigation) }>
                 <Text>{ 'Logout' }</Text>
             </Button>
-        </Content>
+        </View>
     );
 }
 Tours.navigationOptions = { title: 'Tours' };

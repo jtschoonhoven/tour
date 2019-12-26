@@ -4,6 +4,7 @@ import { FlatList } from 'react-navigation';
 
 import { ReactNavFC, ReactNavProp } from '../../types';
 import TourListItem from './TourListItem';
+import { Button, Text } from 'native-base';
 
 
 const STYLE = StyleSheet.create({
@@ -26,6 +27,11 @@ const TOURS_STUB: Tour[] = [
 ];
 
 
+const TestFooter: React.FC = () => {
+    return <Button><Text>Test Footer</Text></Button>;
+};
+
+
 /**
  * List of Tour cards.
  */
@@ -34,6 +40,7 @@ const TourList: ReactNavFC = ({ navigation }) => {
         <FlatList
             data={ TOURS_STUB }
             contentContainerStyle={ STYLE.contentContainer }
+            ListFooterComponent={ () => <TestFooter /> }
             renderItem={ ({ item }) => renderTourListItem(item, navigation) } />
     );
 }
