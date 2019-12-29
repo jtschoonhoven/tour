@@ -11,6 +11,7 @@ import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import AuthLoading from './components/auth/AuthLoading';
 import NavHeader from './components/common/NavHeader';
+import TourMap from './components/tours/TourMap';
 
 
 /**
@@ -20,6 +21,7 @@ const TourNavigator = createStackNavigator(
   {
     [ROUTE_NAMES.HOME]: Tours,
     [ROUTE_NAMES.TOUR]: Tour,
+    [ROUTE_NAMES.TOUR_MAP]: TourMap,
   },
   {
     initialRouteName: ROUTE_NAMES.HOME,

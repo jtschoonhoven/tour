@@ -1,6 +1,6 @@
 import React from 'react';
-import { AsyncStorage, StyleSheet, View, TouchableHighlight } from 'react-native';
-import { Text, Button, Content } from 'native-base';
+import { AsyncStorage, View } from 'react-native';
+import { Text, Button } from 'native-base';
 
 import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 import { ReactNavFC, ReactNavProp } from '../../types';

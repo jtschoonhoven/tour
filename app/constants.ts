@@ -10,6 +10,7 @@ export const ROUTE_NAMES = {
     ROOT: 'Root',
     HOME: 'Home',
     TOUR: 'Tour',
+    TOUR_MAP: 'TourMap',
     MODAL: 'Modal',
     MAIN: 'Main',
     LOGIN: 'Login',

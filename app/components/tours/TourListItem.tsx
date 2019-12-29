@@ -15,6 +15,10 @@ const STYLES = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    cardItemImageIcon: {
+        fontSize: 60,
+        color: '#CDCDCD',
+    },
 });
 
 interface Props {
@@ -35,7 +39,7 @@ const TourListItem: ReactNavFC<Props> = ({ navigation, tour }) => {
                             <Text>{ tour.title }</Text>
                             <Text note>{ tour.description }</Text>
                             <View style={ STYLES.cardItemImageView } >
-                                <Icon name="images" />
+                                <Icon name="images" style={ STYLES.cardItemImageIcon } />
                             </View>
                             <Button onPress={ () => navigation.navigate(ROUTE_NAMES.TOUR, { tour }) }>
                                 <Text>{ tour.title }</Text>
