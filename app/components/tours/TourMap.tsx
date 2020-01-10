@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import MapView, { Circle } from 'react-native-maps';
+import { StyleSheet } from 'react-native';
 
 import { ReactNavFC } from '../../types';
 import { TourScreenProps } from './Tours';

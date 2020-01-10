@@ -3,11 +3,12 @@ import * as Font from 'expo-font';
 import { createAppContainer } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { Container } from 'native-base';
+import { Provider } from 'react-redux'
 
-
-import { ReactNavFC } from './types';
 import AppLoading from './components/common/AppLoading';
 import AppNavigator from './navigation';
+import store from './store';
+import { ReactNavFC } from './types';
 
 
 const AppContainer = createAppContainer(AppNavigator);
@@ -23,7 +24,9 @@ const App: ReactNavFC = () => {
   }
   return (
     <Container>
-      <AppContainer />
+      <Provider store={store}>
+        <AppContainer />
+      </Provider>
     </Container>
   );
 }
