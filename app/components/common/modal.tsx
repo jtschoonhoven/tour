@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, Text } from 'react-native';
 
-import { ReactNavFC, ReactNavProp } from '../../types';
+import { ReactNavFC } from '../../types';
 
 interface ModalOptions {
     modal: {
@@ -14,13 +14,13 @@ const Modal: ReactNavFC<{}, ModalOptions> = ({ navigation }) => {
         <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
             <Text style={ { fontSize: 30 } }>This is a modal!</Text>
             <Button
-                onPress={ () => navigation.goBack() }
+                onPress={ (): void => { navigation.goBack(); } }
                 title="Back"
             />
         </View>
     );
 };
-Modal.navigationOptions = ({ navigation }) => {
+Modal.navigationOptions = ({ navigation }): { title: string } => {
     const modal = navigation.getParam('modal');
     return { title: modal.title };
 };

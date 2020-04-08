@@ -2,7 +2,15 @@ import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { getActiveChildNavigationOptions } from 'react-navigation';
 import { HeaderProps } from 'react-navigation-stack';
-import { Header, Title, Button, Left, Right, Body, Icon } from 'native-base';
+import {
+    Header,
+    Title,
+    Button,
+    Left,
+    Right,
+    Body,
+    Icon,
+} from 'native-base';
 
 import { ReactNavFC } from '../../types';
 import { IS_ANDROID } from '../../constants';
@@ -26,9 +34,9 @@ const NavHeader: ReactNavFC<HeaderProps> = ({ navigation }) => {
     let leftContent = null;
     if (canGoBack) {
         leftContent = (
-            <Button transparent onPress={ () => { navigation.goBack(null) } }>
-                <Icon name='arrow-back' />
-          </Button>
+            <Button transparent onPress={ (): void => { navigation.goBack(null); } }>
+                <Icon name="arrow-back" />
+            </Button>
         );
     }
     return (

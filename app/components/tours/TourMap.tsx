@@ -26,16 +26,15 @@ const INITIAL_CIRCLE = {
     stroke: StyleSheet.hairlineWidth,
 };
 
-const TourMap: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
-    const tour = navigation.getParam('tour');
+const TourMap: ReactNavFC<{}, TourScreenProps> = () => {
     return (
         <MapView style={ STYLES.map } initialRegion={ INITIAL_REGION }>
             <Circle { ...INITIAL_CIRCLE } />
         </MapView>
     );
 };
-TourMap.navigationOptions = ({ navigation }) => {
+TourMap.navigationOptions = ({ navigation }): { title: string } => {
     const tour = navigation.getParam('tour');
-    return { title: tour.title };
+    return { title: tour.name };
 };
 export default TourMap;

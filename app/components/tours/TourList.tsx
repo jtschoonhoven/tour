@@ -1,30 +1,32 @@
 import React, { ReactElement } from 'react';
+import { connect } from 'react-redux';
 import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-navigation';
+import { Button, Text } from 'native-base';
 
 import { ReactNavFC, ReactNavProp } from '../../types';
 import TourListItem from './TourListItem';
-import { Button, Text } from 'native-base';
+import { TourModel } from '../../store/tours-store';
+import { AppState } from '../../store';
+
+
+interface StateProps {
+    tours: Array<TourModel>;
+}
+
+
+function mapStateToProps(state: AppState): StateProps {
+    return {
+        tours: state.tours.tours,
+    };
+}
 
 
 const STYLE = StyleSheet.create({
     contentContainer: {
         padding: 10,
-    }
+    },
 });
-
-export interface Tour {
-    readonly id: string;
-    readonly title: string;
-    readonly description: string;
-}
-
-// tmp stub for API
-const TOURS_STUB: Tour[] = [
-    {id: '1', title: 'Tour One', description: 'So much fun!' },
-    {id: '2', title: 'Tour Two', description: 'Wow go for it!' },
-    {id: '3', title: 'Tour Three', description: 'Celebration time!' },
-];
 
 
 const TestFooter: React.FC = () => {
@@ -33,23 +35,24 @@ const TestFooter: React.FC = () => {
 
 
 /**
- * List of Tour cards.
+ * Return a single Tour card
  */
-const TourList: ReactNavFC = ({ navigation }) => {
-    return (
-        <FlatList
-            data={ TOURS_STUB }
-            contentContainerStyle={ STYLE.contentContainer }
-            ListFooterComponent={ () => <TestFooter /> }
-            renderItem={ ({ item }) => renderTourListItem(item, navigation) } />
-    );
+function renderTourListItem(tour: TourModel, navigation: ReactNavProp): ReactElement {
+    return <TourListItem key={ tour.uuid } tour={ tour } navigation={ navigation } />;
 }
-export default TourList;
 
 
 /**
- * Return a single Tour card
+ * List of Tour cards.
  */
-function renderTourListItem(tour: Tour, navigation: ReactNavProp): ReactElement {
-    return <TourListItem key={ tour.id } tour={ tour } navigation={ navigation } />
-}
+const TourList: ReactNavFC<StateProps> = ({ navigation, tours }) => {
+    return (
+        <FlatList
+            data={ tours }
+            contentContainerStyle={ STYLE.contentContainer }
+            ListFooterComponent={ (): ReactElement => <TestFooter /> }
+            renderItem={ ({ item }): ReactElement => renderTourListItem(item, navigation) }
+        />
+    );
+};
+export default connect(mapStateToProps)(TourList);

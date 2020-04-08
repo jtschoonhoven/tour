@@ -1,0 +1,62 @@
+{
+  "uuid": "A0472E68-7822-4211-9F11-5CBD919162DC",
+  "name": "GeoTest",
+  "creator": "Twine",
+  "creatorVersion": "2.3.6",
+  "schemaName": "Harlowe 3 to JSON",
+  "schemaVersion": "0.0.6",
+  "createdAtMs": 1586362589608,
+  "passages": [
+    {
+      "name": "start",
+      "tags": "",
+      "id": "1",
+      "text": "Get to the choppa!\n\n[[checkpoint]]",
+      "links": [
+        {
+          "linkText": "checkpoint",
+          "passageName": "checkpoint",
+          "original": "[[checkpoint]]"
+        }
+      ],
+      "hooks": [],
+      "cleanText": "Get to the choppa!"
+    },
+    {
+      "name": "checkpoint",
+      "tags": "",
+      "id": "2",
+      "text": "You made it to the checkpoint. Go to the finish point.\n\n|geoCircle>[{ \"lat\": 122.32, \"lng\": -32.17, \"radius\": 100 }]\n\n[[finish]]",
+      "links": [
+        {
+          "linkText": "finish",
+          "passageName": "finish",
+          "original": "[[finish]]"
+        }
+      ],
+      "hooks": [
+        {
+          "hookName": "geoCircle",
+          "hookText": "{ \"lat\": 122.32, \"lng\": -32.17, \"radius\": 100 }",
+          "original": "|geoCircle>[{ \"lat\": 122.32, \"lng\": -32.17, \"radius\": 100 }]"
+        }
+      ],
+      "cleanText": "You made it to the checkpoint. Go to the finish point."
+    },
+    {
+      "name": "finish",
+      "tags": "",
+      "id": "3",
+      "text": "The end.\n\n|geoCircle>[{ \"lat\": 123.32, \"lng\": -32.17, \"radius\": 100 }]",
+      "links": [],
+      "hooks": [
+        {
+          "hookName": "geoCircle",
+          "hookText": "{ \"lat\": 123.32, \"lng\": -32.17, \"radius\": 100 }",
+          "original": "|geoCircle>[{ \"lat\": 123.32, \"lng\": -32.17, \"radius\": 100 }]"
+        }
+      ],
+      "cleanText": "The end."
+    }
+  ]
+}

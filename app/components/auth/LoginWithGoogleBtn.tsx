@@ -17,14 +17,6 @@ const GOOGLE_AUTH_CONFIG = {
 };
 
 
-const LoginWithGoogleBtn: ReactNavFC = ({ navigation }) => {
-    return (
-        <Button title="Login with Google" onPress={ () => loginWithGoogleAsync(navigation) } />
-    );
-};
-export default LoginWithGoogleBtn;
-
-
 /**
  * Redirect to Google login page and redirect on success.
  *
@@ -44,6 +36,7 @@ async function loginWithGoogleAsync(navigation: ReactNavProp): Promise<void> {
     }
     catch (error) {
         // TODO: show alert
+        console.error(error);
         throw error;
     }
     if (loginResult.type === 'cancel') {
@@ -56,8 +49,17 @@ async function loginWithGoogleAsync(navigation: ReactNavProp): Promise<void> {
     }
     catch (error) {
         // TODO: show alert
+        console.error(error);
         throw error;
     }
     // navigate home on success
     navigation.navigate(ROUTE_NAMES.HOME);
 }
+
+
+const LoginWithGoogleBtn: ReactNavFC = ({ navigation }) => {
+    return (
+        <Button title="Login with Google" onPress={ (): void => { loginWithGoogleAsync(navigation); } } />
+    );
+};
+export default LoginWithGoogleBtn;

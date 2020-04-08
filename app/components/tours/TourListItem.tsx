@@ -1,10 +1,18 @@
 import React from 'react';
 import { StyleSheet, View, TouchableHighlight } from 'react-native';
-import { Body, Card, CardItem, Left, Text, Button, Icon } from 'native-base';
+import {
+    Body,
+    Card,
+    CardItem,
+    Left,
+    Text,
+    Button,
+    Icon,
+} from 'native-base';
 
-import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
-import { ReactNavFC, ReactNavProp } from '../../types';
-import { Tour } from './TourList';
+import { ROUTE_NAMES } from '../../constants';
+import { ReactNavFC } from '../../types';
+import { TourModel } from '../../store/tours-store';
 
 
 const STYLES = StyleSheet.create({
@@ -22,7 +30,7 @@ const STYLES = StyleSheet.create({
 });
 
 interface Props {
-    tour: Tour;
+    tour: TourModel;
 }
 
 
@@ -31,18 +39,18 @@ interface Props {
  */
 const TourListItem: ReactNavFC<Props> = ({ navigation, tour }) => {
     return (
-        <TouchableHighlight onPress={ () => navigation.navigate(ROUTE_NAMES.TOUR, { tour }) }>
-            <Card key={ tour.id }>
+        <TouchableHighlight onPress={ (): void => { navigation.navigate(ROUTE_NAMES.TOUR, { tour }); } }>
+            <Card key={ tour.uuid }>
                 <CardItem>
                     <Left>
                         <Body>
-                            <Text>{ tour.title }</Text>
-                            <Text note>{ tour.description }</Text>
-                            <View style={ STYLES.cardItemImageView } >
+                            <Text>{ tour.name }</Text>
+                            <Text note>{ tour.name }</Text>
+                            <View style={ STYLES.cardItemImageView }>
                                 <Icon name="images" style={ STYLES.cardItemImageIcon } />
                             </View>
-                            <Button onPress={ () => navigation.navigate(ROUTE_NAMES.TOUR, { tour }) }>
-                                <Text>{ tour.title }</Text>
+                            <Button onPress={ (): void => { navigation.navigate(ROUTE_NAMES.TOUR, { tour }); } }>
+                                <Text>{ tour.name }</Text>
                             </Button>
                         </Body>
                     </Left>
@@ -50,5 +58,5 @@ const TourListItem: ReactNavFC<Props> = ({ navigation, tour }) => {
             </Card>
         </TouchableHighlight>
     );
-}
+};
 export default TourListItem;
