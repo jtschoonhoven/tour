@@ -56,12 +56,18 @@ function _parseJsonStringAsGeoCircle(jsonString: string): GeoCircle {
 }
 
 
+/**
+ * Parse geometries in this passage to an array of geocircles.
+ */
 function _getGeometriesForPassage(passage: Passage): Array<GeoCircle> {
     const geoHooks = passage.hooks.filter((hook) => hook.hookName.toLowerCase() === 'geocircle');
     return geoHooks.map((geoHook) => _parseJsonStringAsGeoCircle(geoHook.hookText));
 }
 
 
+/**
+ * Return an array of indices to other linked passages.
+ */
 function _getLinkIndicesForPassage(passage: Passage, passages: Array<Passage>): Array<number> {
     return passage.links.map((link) => {
         const linkIndex = passages.findIndex((otherPassage) => otherPassage.name === link.passageName);
@@ -73,6 +79,9 @@ function _getLinkIndicesForPassage(passage: Passage, passages: Array<Passage>): 
 }
 
 
+/**
+ * Parse a Twine story export as a TourModel.
+ */
 function parseTwineToJsonExport(input: TwineToJsonExport): TourModel {
     const { uuid, name, schemaName, schemaVersion, createdAtMs, passages } = input;
     const checkpoints: Array<CheckpointModel> = passages.map((passage) => {

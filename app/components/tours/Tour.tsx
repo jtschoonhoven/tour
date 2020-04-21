@@ -71,7 +71,6 @@ const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
 };
 Tour.navigationOptions = ({ navigation }): { title: string } => {
     const tour = navigation.getParam('tour');
-    const title = `Tour Screen #${tour.uuid}`;
-    return { title };
+    return { title: tour.name };
 };
 export default Tour;

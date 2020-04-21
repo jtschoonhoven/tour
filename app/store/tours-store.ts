@@ -41,7 +41,7 @@ interface ToursState {
 
 const INITIAL_STATE: ToursState = {
     tours: [],
-    currentTour: null,
+    currentTour: undefined,
     toursStarted: [],
 };
 

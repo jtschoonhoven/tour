@@ -17,6 +17,7 @@ export const ROUTE_NAMES = {
     SIGNUP: 'Signup',
     AUTH: 'Auth',
     AUTH_LOADING: 'AuthLoading',
+    PERMISSIONS_LOADING: 'PermissionsLoading',
 } as const;
 
 // All keys stored in system storage

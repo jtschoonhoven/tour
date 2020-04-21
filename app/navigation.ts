@@ -12,6 +12,7 @@ import Signup from './components/auth/Signup';
 import AuthLoading from './components/auth/AuthLoading';
 import NavHeader from './components/common/NavHeader';
 import TourMap from './components/tours/TourMap';
+import PermissionsLoading from './components/permissions/PermissionsLoading';
 
 
 /**
@@ -62,10 +63,11 @@ const TourNavigatorWithModal = createStackNavigator(
  */
 const AppNavigator = createAnimatedSwitchNavigator(
     {
+        [ROUTE_NAMES.PERMISSIONS_LOADING]: PermissionsLoading,
         [ROUTE_NAMES.AUTH_LOADING]: AuthLoading,
         [ROUTE_NAMES.ROOT]: TourNavigatorWithModal,
         [ROUTE_NAMES.AUTH]: AuthNavigator,
     },
-    { initialRouteName: ROUTE_NAMES.AUTH_LOADING },
+    { initialRouteName: ROUTE_NAMES.PERMISSIONS_LOADING },
 );
 export default AppNavigator;
