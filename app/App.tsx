@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import * as Font from 'expo-font';
+import React from 'react';
+import { useFonts } from '@use-expo/font';
 import { createAppContainer } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { Container } from 'native-base';
@@ -15,31 +15,19 @@ const AppContainer = createAppContainer(AppNavigator);
 
 
 /**
- * Load assets async, then toggle `isReady` state when finished.
+ * Main app. Displays AppLoading view until all assets are loaded.
  */
-async function loadAssetsAsync(setAssetsDidLoad: React.Dispatch<React.SetStateAction<boolean>>): Promise<void> {
-    // TODO: remove unnecessary delay when loading screen is finished
-    await new Promise<void>((resolve) => {
-        setTimeout(() => { resolve(); }, 1000);
-    });
-    await Font.loadAsync({
+const App: ReactNavFC = () => {
+    const [fontsDidLoad] = useFonts({
         Roboto: require('native-base/Fonts/Roboto.ttf'), // eslint-disable-line global-require
         Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'), // eslint-disable-line global-require
         ...Ionicons.font,
     });
-    setAssetsDidLoad(true);
-}
 
-
-/**
- * Main app. Displays AppLoading view until all assets are loaded.
- */
-const App: ReactNavFC = () => {
-    const [assetsDidLoad, setAssetsDidLoad] = useState(false);
-    useEffect((): void => { loadAssetsAsync(setAssetsDidLoad); }, [assetsDidLoad]);
-    if (!assetsDidLoad) {
+    if (!fontsDidLoad) {
         return <AppLoading />;
     }
+
     return (
         <Container>
             <Provider store={ store }>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StatusBar } from 'react-native';
 import * as Permissions from 'expo-permissions';
 
 import AppLoading from '../common/AppLoading';
@@ -8,24 +7,11 @@ import { ROUTE_NAMES } from '../../constants';
 import { ReactNavFC } from '../../types';
 
 
-interface Permission {
-    type: Permissions.PermissionType;
-    requestMessage: string;
-}
-
-
-const PERMISSIONS: Array<Permission> = [
-    {
-        type: Permissions.LOCATION,
-        requestMessage: 'Location is required to guide you on your tour.',
-    },
-];
-
-
 const PermissionsLoading: ReactNavFC = ({ navigation }) => {
     const [isPermissionsLoading, setIsPermissionsLoading] = React.useState<boolean>(true);
     const [isPermissionsGranted, setIsPermissionsGranted] = React.useState<boolean>(false);
 
+    // check permissions async then update state
     React.useEffect(() => {
         Permissions.getAsync(Permissions.LOCATION)
             .then((permissionResponse) => {
@@ -35,15 +21,19 @@ const PermissionsLoading: ReactNavFC = ({ navigation }) => {
             });
     });
 
-    if (isPermissionsLoading) {
-        return <AppLoading />;
-    }
+    // redirect if permission is granted
+    React.useEffect(() => {
+        if (isPermissionsGranted) {
+            navigation.navigate(ROUTE_NAMES.AUTH_LOADING);
+        }
+    }, [isPermissionsGranted]);
 
-    if (!isPermissionsGranted) {
+    // show permissions request view if not granted
+    if (!isPermissionsLoading && !isPermissionsGranted) {
         return <PermissionsRequesting setIsPermissionsGranted={ setIsPermissionsGranted } />;
     }
 
-    navigation.navigate(ROUTE_NAMES.AUTH_LOADING);
-    return <AppLoading />; // displayed only until navigation action completes
+    // shows loading view while confirming permissions
+    return <AppLoading />;
 };
 export default PermissionsLoading;

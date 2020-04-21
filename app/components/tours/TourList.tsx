@@ -51,9 +51,10 @@ const TourList: ReactNavFC<StateProps> = ({ navigation, tours }) => {
             data={ tours }
             contentContainerStyle={ STYLE.contentContainer }
             ListFooterComponent={ (): ReactElement => <TestFooter /> }
+            keyExtractor={ (_, index): string => index.toString() }
             renderItem={ ({ item }: { item: TourModel }): ReactElement => {
                 return renderTourListItem(item, navigation);
-            }}
+            } }
         />
     );
 };

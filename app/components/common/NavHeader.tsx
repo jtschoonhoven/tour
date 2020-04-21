@@ -18,10 +18,10 @@ import { IS_ANDROID } from '../../constants';
 
 const STYLES = StyleSheet.create({
     // correct for native-base not adjusting for transparent status bar on Android
-    header: IS_ANDROID && {
-        paddingTop: StatusBar.currentHeight,
-        height: 48 + StatusBar.currentHeight,
-    },
+    header: IS_ANDROID ? {
+        paddingTop: StatusBar.currentHeight || 0,
+        height: 48 + (StatusBar.currentHeight || 0),
+    } : {},
 });
 
 

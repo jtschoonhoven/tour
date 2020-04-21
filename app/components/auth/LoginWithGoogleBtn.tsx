@@ -1,4 +1,5 @@
 import React from 'react';
+import get from 'lodash/get';
 import * as Google from 'expo-google-app-auth';
 import { AsyncStorage, Button } from 'react-native';
 
@@ -43,7 +44,10 @@ async function loginWithGoogleAsync(navigation: ReactNavProp): Promise<void> {
         // TODO: show alert and retry rather than throw error
         throw new Error('Login failed');
     }
-    const { accessToken } = loginResult;
+    const accessToken: string = get(loginResult, 'accessToken');
+    if (!accessToken) {
+        throw new Error('Login result did not contain an accessToken');
+    }
     try {
         AsyncStorage.setItem(STORAGE_KEYS.USER_TOKEN, accessToken);
     }

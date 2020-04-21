@@ -1,7 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Button, Text } from 'native-base';
+
+import PermissionsBlocked from './PermissionsBlocked';
+import Alert from '../common/Alert';
+import AppView from '../common/AppView';
 
 
 interface Props {
@@ -11,27 +14,34 @@ interface Props {
 
 const PermissionsRequesting: React.FC<Props> = ({ setIsPermissionsGranted }: Props) => {
     const [isPermissionsBlocked, setIsPermissionsBlocked] = React.useState<boolean>(false);
-    function onPress() {
+
+    function requestPermission(): void {
         Permissions.askAsync(Permissions.LOCATION)
             .then((permissionResponse) => {
                 const isGranted = permissionResponse.status === 'granted';
                 setIsPermissionsGranted(isGranted);
                 setIsPermissionsBlocked(!isGranted);
+            })
+            .catch((err) => {
+                console.error(`Permissions.askAsync failed:\n${err}`);
+                setIsPermissionsGranted(false);
+                setIsPermissionsBlocked(true);
             });
     }
 
-    let requestText = 'This app needs to access your GPS to guide you on your tour.';
     if (isPermissionsBlocked) {
-        requestText = 'GPS permission has been blocked by your device.';
+        return <PermissionsBlocked />;
     }
 
     return (
-        <View style={ { flex: 1, alignItems: 'center', justifyContent: 'center' } }>
-            <Text>{ requestText }</Text>
-            <Button onPress={ onPress } >
-                <Text>Grant GPS Access</Text>
-            </Button>
-        </View>
+        <AppView>
+            <Alert title="Alert!">
+                <Text>This app needs to access your GPS to guide you on your tour.</Text>
+                <Button onPress={ requestPermission }>
+                    <Text>Grant GPS Access</Text>
+                </Button>
+            </Alert>
+        </AppView>
     );
 };
 export default PermissionsRequesting;

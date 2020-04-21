@@ -70,4 +70,5 @@ const AppNavigator = createAnimatedSwitchNavigator(
     },
     { initialRouteName: ROUTE_NAMES.PERMISSIONS_LOADING },
 );
+
 export default AppNavigator;

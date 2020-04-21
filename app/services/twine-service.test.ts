@@ -20,8 +20,8 @@ test('parseTwineToJsonExport geoTest fixture', () => {
             },
             {
                 geometries: [{
-                    lat: 122.32,
-                    lng: -32.17,
+                    lat: 37.76483,
+                    lng: -122.4455,
                     radius: 100,
                     type: 'geocircle',
                 }],
@@ -31,8 +31,8 @@ test('parseTwineToJsonExport geoTest fixture', () => {
             },
             {
                 geometries: [{
-                    lat: 123.32,
-                    lng: -32.17,
+                    lat: 37.7677421,
+                    lng: -122.44145,
                     radius: 100,
                     type: 'geocircle',
                 }],

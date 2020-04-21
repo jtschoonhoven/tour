@@ -46,7 +46,7 @@ const TourMap: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
     });
 
     const linkedMapGeoCircles = linkedMapGeoCircleProps.map((geoCircleProps, idx) => {
-        return <Circle { ...geoCircleProps } key={ idx } />;
+        return <Circle { ...geoCircleProps } key={ idx.toString() } />;
     });
 
     return (
