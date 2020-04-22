@@ -19,7 +19,7 @@ const PermissionsLoading: ReactNavFC = ({ navigation }) => {
                 setIsPermissionsLoading(false);
                 setIsPermissionsGranted(isGranted);
             });
-    });
+    }, []);
 
     // redirect if permission is granted
     React.useEffect(() => {
