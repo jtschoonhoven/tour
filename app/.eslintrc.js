@@ -44,6 +44,7 @@ module.exports = {
         "no-param-reassign": "off",
         "no-underscore-dangle": "off",
         "spaced-comment": "off",
+        "lines-between-class-members": "off", // allow any spacing between class members
         "quote-props": ["error", "consistent"],
         "object-curly-newline": ["error", { "minProperties": 7, "consistent": true }],
         "no-unused-expressions": "off",
@@ -64,5 +65,6 @@ module.exports = {
         "@typescript-eslint/brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/class-name-casing": { "allowUnderscorePrefix": true },
     },
 };

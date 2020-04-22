@@ -82,10 +82,11 @@ function _getLinkIndicesForPassage(passage: Passage, passages: Array<Passage>): 
 /**
  * Parse a Twine story export as a TourModel.
  */
-function parseTwineToJsonExport(input: TwineToJsonExport): TourModel {
+function parseTwineToJsonExport(input: TwineToJsonExport, index: number): TourModel {
     const { uuid, name, schemaName, schemaVersion, createdAtMs, passages } = input;
-    const checkpoints: Array<CheckpointModel> = passages.map((passage) => {
+    const checkpoints: Array<CheckpointModel> = passages.map((passage, passageIndex) => {
         return {
+            index: passageIndex,
             name: passage.name,
             text: passage.cleanText,
             geometries: _getGeometriesForPassage(passage),
@@ -95,6 +96,7 @@ function parseTwineToJsonExport(input: TwineToJsonExport): TourModel {
     return {
         uuid,
         name,
+        index,
         schemaName,
         schemaVersion,
         createdAtMs,

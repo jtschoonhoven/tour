@@ -31,4 +31,4 @@ export type AppState = ReturnType<typeof rootReducer>;
 
 
 // TODO: this is for testing only: replace with a better way to load tours
-actions.tours.load(twineService.parseTwineToJsonExport(geoTest));
+actions.tours.load(twineService.parseTwineToJsonExport(geoTest, 0));

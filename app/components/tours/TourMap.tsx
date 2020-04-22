@@ -1,10 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import MapView, { Circle } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 
 import { ReactNavFC } from '../../types';
 import { TourScreenProps } from './Tours';
 import locationService from '../../services/location-service';
+import { TourModel, TourMeta } from '../../store/tours-store';
+import { AppState, actions } from '../../store';
+import AppLoading from '../common/AppLoading';
 
 
 const STYLES = StyleSheet.create({
@@ -16,35 +20,62 @@ const STYLES = StyleSheet.create({
 
 
 const INITIAL_REGION = {
-    latitude: 37.78825,
-    longitude: -122.4324,
+    latitude: 37.76483,
+    longitude: -122.4455,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 };
 
 
-const TourMap: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
-    const tour = navigation.getParam('tour');
+interface StateProps {
+    tourMeta?: TourMeta;
+}
 
-    React.useEffect(() => {
-        locationService.watchActiveCheckpoint(tour, 0);
-    });
+function mapStateToProps(state: AppState): StateProps {
+    return {
+        tourMeta: state.tours.currentTour,
+    };
+}
 
-    const linkedGeometries = locationService.getLinkedGeometries(tour, 0);
-    const linkedMapGeoCircleProps = linkedGeometries.map((geom) => {
-        return {
+
+const _Circles = (tour: TourModel, checkpointIndex: number): JSX.Element[] => {
+    const linkedGeometries = locationService.getLinkedGeometries(tour, checkpointIndex);
+    return linkedGeometries.map((geom, idx) => {
+        const geoCircleProps = {
             center: { latitude: geom.lat, longitude: geom.lng },
             radius: geom.radius,
             strokeWidth: StyleSheet.hairlineWidth,
         };
-    });
-
-    const linkedMapGeoCircles = linkedMapGeoCircleProps.map((geoCircleProps, idx) => {
         return <Circle { ...geoCircleProps } key={ idx.toString() } />;
     });
+};
+
+
+function _isTourStarted(tourMeta: TourMeta | undefined, tourIndex: number): boolean {
+    return !!(tourMeta && tourMeta.isStarted && tourMeta.toursIndex === tourIndex);
+}
+
+
+const TourMap: ReactNavFC<StateProps, TourScreenProps> = ({ navigation, tourMeta }) => {
+    const tour = navigation.getParam('tour');
+
+    if (!_isTourStarted(tourMeta, tour.index) || !tourMeta) {
+        actions.tours.tourStart(tour.index);
+        return <AppLoading />
+    }
+
+    // watch geofences in background
+    React.useEffect(() => {
+        locationService.watchActiveCheckpoint(tour, tourMeta.checkpointIndex);
+    }, [tourMeta.checkpointIndex, tour]);
+
+    // place next checkpoints in map
+    const linkedMapGeoCircles = React.useMemo<JSX.Element[]>(() => {
+        return _Circles(tour, tourMeta.checkpointIndex);
+    }, [tour, tourMeta.checkpointIndex]);
 
     return (
-        <MapView style={ STYLES.map } initialRegion={ INITIAL_REGION }>
+        <MapView style={ STYLES.map } initialRegion={ INITIAL_REGION } showsUserLocation>
             { linkedMapGeoCircles }
         </MapView>
     );
@@ -53,4 +84,4 @@ TourMap.navigationOptions = ({ navigation }): { title: string } => {
     const tour = navigation.getParam('tour');
     return { title: tour.name };
 };
-export default TourMap;
+export default connect(mapStateToProps)(TourMap);
