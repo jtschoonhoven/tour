@@ -15,18 +15,18 @@ interface Props {
 const PermissionsRequesting: React.FC<Props> = ({ setIsPermissionsGranted }: Props) => {
     const [isPermissionsBlocked, setIsPermissionsBlocked] = React.useState<boolean>(false);
 
-    function requestPermission(): void {
-        Permissions.askAsync(Permissions.LOCATION)
-            .then((permissionResponse) => {
-                const isGranted = permissionResponse.status === 'granted';
-                setIsPermissionsGranted(isGranted);
-                setIsPermissionsBlocked(!isGranted);
-            })
-            .catch((err) => {
-                console.error(`Permissions.askAsync failed:\n${err}`);
-                setIsPermissionsGranted(false);
-                setIsPermissionsBlocked(true);
-            });
+    async function requestPermission(): Promise<void> {
+        try {
+            const permissionResponse = await Permissions.askAsync(Permissions.LOCATION);
+            const isGranted = permissionResponse.status === 'granted';
+            setIsPermissionsGranted(isGranted);
+            setIsPermissionsBlocked(!isGranted);
+        }
+        catch (err) {
+            console.error(`Permissions.askAsync failed:\n${err}`);
+            setIsPermissionsGranted(false);
+            setIsPermissionsBlocked(true);
+        }
     }
 
     if (isPermissionsBlocked) {
