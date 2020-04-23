@@ -2,7 +2,6 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import get from 'lodash/get';
 
-import eventService from './event-service';
 import { actions } from '../store';
 import { TourModel, CheckpointModel, GeoCircle, RegionId } from '../store/tours-store';
 
@@ -36,12 +35,7 @@ function defineBackgroundTasks(): void {
             throw new Error(`Unexpected event ID: ${eventType}`);
         }
 
-        eventService.emitGeofenceEnterEvent(regionId.asObject());
-    });
-
-    // Sync to store.
-    eventService.onEmitGeofenceEnterEvent((data) => {
-        actions.tours.enterCheckpoint(data);
+        actions.tours.enterCheckpoint(regionId.asObject());
     });
 }
 
