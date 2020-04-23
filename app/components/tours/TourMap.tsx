@@ -61,7 +61,7 @@ const TourMap: ReactNavFC<StateProps, TourScreenProps> = ({ navigation, tourMeta
 
     if (!_isTourStarted(tourMeta, tour.index) || !tourMeta) {
         actions.tours.tourStart(tour.index);
-        return <AppLoading />
+        return <AppLoading />;
     }
 
     // watch geofences in background

@@ -65,6 +65,6 @@ module.exports = {
         "@typescript-eslint/brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/no-empty-interface": "off",
-        "@typescript-eslint/class-name-casing": { "allowUnderscorePrefix": true },
+        "@typescript-eslint/class-name-casing": ["error", { "allowUnderscorePrefix": true }],
     },
 };

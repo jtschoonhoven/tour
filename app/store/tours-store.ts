@@ -47,7 +47,7 @@ const INITIAL_STATE: ToursState = {
 };
 
 
-export interface RegionIdInterface {
+interface RegionIdInterface {
     readonly error?: Error;
     readonly tourIndex: number;
     readonly checkpointIndex: number;
@@ -79,7 +79,7 @@ export class RegionId implements RegionIdInterface {
     }
 
     static serialize(regionId: RegionIdInterface): string {
-        return JSON.stringify(regionId)
+        return JSON.stringify(regionId);
     }
 
     static deserialize(regionIdStr: string): RegionIdInterface {
@@ -90,7 +90,7 @@ export class RegionId implements RegionIdInterface {
         return {
             tourIndex: this.tourIndex,
             checkpointIndex: this.checkpointIndex,
-        }
+        };
     }
 
     toString(): string {

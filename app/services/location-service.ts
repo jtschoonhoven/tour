@@ -23,7 +23,7 @@ function defineBackgroundTasks(): void {
 
         // throw on TaskManager error
         if (error) {
-            throw new Error(error.message)
+            throw new Error(error.message);
         }
 
         // throw on Regionid error
