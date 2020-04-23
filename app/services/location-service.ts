@@ -89,12 +89,15 @@ function _parseCheckpointAsGeofenceRegions(tour: TourModel, checkpointIndex: num
  * Monitor the geofences linked to from the given checkpoint index.
  * Calls the callback defined in TaskManager.defineTask.
  */
-function watchActiveCheckpoint(tour: TourModel, checkpointIndex: number): void {
+function watchActiveCheckpoint(tour: TourModel, checkpointIndex: number): Promise<void> {
     const regions = _parseCheckpointAsGeofenceRegions(tour, checkpointIndex);
     if (regions.length > 20) {
         throw new Error('Max geofencing regions exceeded.');
     }
-    Location.startGeofencingAsync(GEOFENCE_BACKGROUND_TASK_NAME, regions);
+    if (!regions.length) {
+        return Location.stopGeofencingAsync(GEOFENCE_BACKGROUND_TASK_NAME);
+    }
+    return Location.startGeofencingAsync(GEOFENCE_BACKGROUND_TASK_NAME, regions);
 }
 
 
