@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import locationService, { RegionIdInterface } from '../services/location-service';
-
 
 export interface GeoCircle {
     type: 'geocircle';
@@ -49,6 +47,58 @@ const INITIAL_STATE: ToursState = {
 };
 
 
+export interface RegionIdInterface {
+    readonly error?: Error;
+    readonly tourIndex: number;
+    readonly checkpointIndex: number;
+}
+
+
+export class RegionId implements RegionIdInterface {
+    readonly error?: Error;
+    readonly tourIndex: number;
+    readonly checkpointIndex: number;
+
+    constructor(input: string | RegionIdInterface) {
+        try {
+            if (typeof input === 'string') {
+                const { tourIndex, checkpointIndex } = RegionId.deserialize(input);
+                this.tourIndex = tourIndex;
+                this.checkpointIndex = checkpointIndex;
+            }
+            else {
+                this.tourIndex = input.tourIndex;
+                this.checkpointIndex = input.checkpointIndex;
+            }
+        }
+        catch (err) {
+            this.error = err;
+            this.tourIndex = -1;
+            this.checkpointIndex = -1;
+        }
+    }
+
+    static serialize(regionId: RegionIdInterface): string {
+        return JSON.stringify(regionId)
+    }
+
+    static deserialize(regionIdStr: string): RegionIdInterface {
+        return JSON.parse(regionIdStr);
+    }
+
+    asObject(): RegionIdInterface {
+        return {
+            tourIndex: this.tourIndex,
+            checkpointIndex: this.checkpointIndex,
+        }
+    }
+
+    toString(): string {
+        return RegionId.serialize(this.asObject());
+    }
+}
+
+
 function loadReducer(state: ToursState, action: PayloadAction<TourModel>): ToursState {
     const tour = action.payload;
     return Object.assign(state, { tours: [...state.tours, tour] });
@@ -85,7 +135,7 @@ function tourStartReducer(state: ToursState, action: PayloadAction<number>): Tou
 
 
 function enterCheckpointReducer(state: ToursState, action: PayloadAction<RegionIdInterface>): ToursState {
-    const regionId = new locationService.RegionId(action.payload);
+    const regionId = new RegionId(action.payload);
     const currentTourMeta = state.currentTour;
 
     if (regionId.error) {

@@ -4,7 +4,7 @@ import get from 'lodash/get';
 
 import eventService from './event-service';
 import { actions } from '../store';
-import { TourModel, CheckpointModel, GeoCircle } from '../store/tours-store';
+import { TourModel, CheckpointModel, GeoCircle, RegionId } from '../store/tours-store';
 
 
 const GEOFENCE_BACKGROUND_TASK_NAME = '__tour__';
@@ -72,58 +72,6 @@ function getLinkedGeometries(tour: TourModel, checkpointIndex: number): GeoCircl
 }
 
 
-export interface RegionIdInterface {
-    readonly error?: Error;
-    readonly tourIndex: number;
-    readonly checkpointIndex: number;
-}
-
-
-export class RegionId implements RegionIdInterface {
-    readonly error?: Error;
-    readonly tourIndex: number;
-    readonly checkpointIndex: number;
-
-    constructor(input: string | RegionIdInterface) {
-        try {
-            if (typeof input === 'string') {
-                const { tourIndex, checkpointIndex } = RegionId.deserialize(input);
-                this.tourIndex = tourIndex;
-                this.checkpointIndex = checkpointIndex;
-            }
-            else {
-                this.tourIndex = input.tourIndex;
-                this.checkpointIndex = input.checkpointIndex;
-            }
-        }
-        catch (err) {
-            this.error = err;
-            this.tourIndex = -1;
-            this.checkpointIndex = -1;
-        }
-    }
-
-    static serialize(regionId: RegionIdInterface): string {
-        return JSON.stringify(regionId)
-    }
-
-    static deserialize(regionIdStr: string): RegionIdInterface {
-        return JSON.parse(regionIdStr);
-    }
-
-    asObject(): RegionIdInterface {
-        return {
-            tourIndex: this.tourIndex,
-            checkpointIndex: this.checkpointIndex,
-        }
-    }
-
-    toString(): string {
-        return RegionId.serialize(this.asObject());
-    }
-}
-
-
 /**
  * Parse a CheckpointModel and return an array of LocationRegions for all linked geometries.
  */
@@ -161,5 +109,4 @@ export default {
     getLinkedCheckpoints,
     watchActiveCheckpoint,
     defineBackgroundTasks,
-    RegionId,
 };
