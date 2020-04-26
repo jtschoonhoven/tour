@@ -4,10 +4,10 @@ import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-navigation';
 import { Button, Text } from 'native-base';
 
-import { ReactNavFC, ReactNavProp } from '../../types';
 import TourListItem from './TourListItem';
+import { ReactNavFC, ReactNavProp } from '../../types';
 import { TourModel } from '../../store/tours-store';
-import { AppState } from '../../store';
+import { AppState } from '../../store/store';
 
 
 interface StateProps {

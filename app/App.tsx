@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 
 import AppLoading from './components/common/AppLoading';
 import AppNavigator from './navigation';
-import store from './store';
+import store from './store/store';
 import locationService from './services/location-service';
 import { ReactNavFC } from './types';
 

@@ -4,11 +4,9 @@ import MapView, { Circle } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 
 import { ReactNavFC } from '../../types';
-import { TourScreenProps } from './Tours';
 import locationService from '../../services/location-service';
 import { TourModel } from '../../store/tours-store';
-import { AppState, actions } from '../../store';
-import AppLoading from '../common/AppLoading';
+import { AppState } from '../../store/store';
 
 
 const STYLES = StyleSheet.create({
@@ -17,6 +15,11 @@ const STYLES = StyleSheet.create({
         height: '100%',
     },
 });
+
+
+export interface TourMapNavParams {
+    tourName: string;
+}
 
 
 const INITIAL_REGION = {
@@ -28,25 +31,23 @@ const INITIAL_REGION = {
 
 
 interface StateProps {
-    currentTourCheckpointIndex?: number;
-    currentTourIsStarted: boolean;
-    currentTourIndex?: number;
+    activeTourCheckpointIndex?: number;
+    activeTourIndex?: number;
+    activeTour?: TourModel;
 }
 
 function mapStateToProps(state: AppState): StateProps {
-    let currentTourCheckpointIndex: number | undefined;
-    let currentTourIsStarted = false;
-    let currentTourIndex: number | undefined;
+    let activeTour: TourModel | undefined;
+    const activeTourIndex = state.tours.currentTour?.toursIndex;
 
-    if (state.tours.currentTour) {
-        currentTourCheckpointIndex = state.tours.currentTour.checkpointIndex;
-        currentTourIsStarted = state.tours.currentTour.isStarted;
-        currentTourIndex = state.tours.currentTour.toursIndex;
+    if (typeof activeTourIndex !== 'undefined') {
+        activeTour = state.tours.tours[activeTourIndex];
     }
+
     return {
-        currentTourCheckpointIndex,
-        currentTourIsStarted,
-        currentTourIndex,
+        activeTour,
+        activeTourIndex,
+        activeTourCheckpointIndex: state.tours.currentTour?.checkpointIndex,
     };
 }
 
@@ -67,45 +68,27 @@ const _Circles = (tour: TourModel, checkpointIndex?: number): JSX.Element[] => {
 };
 
 
-const TourMap: ReactNavFC<StateProps, TourScreenProps> = (props) => {
-    const {
-        navigation,
-        currentTourCheckpointIndex,
-        currentTourIsStarted,
-        currentTourIndex,
-    } = props;
+const TourMap: ReactNavFC<StateProps, TourMapNavParams> = (props) => {
+    const { navigation, activeTourCheckpointIndex, activeTour, activeTourIndex } = props;
+    const tourName = navigation.getParam('tourName');
 
-    const tour = navigation.getParam('tour');
+    if (!activeTour) {
+        throw new Error(`Tour ${tourName} at index ${activeTourIndex} is not active.`);
+    }
 
-    const isTourStarted = !(
-        currentTourIndex === undefined
-        || !currentTourIsStarted
-        || currentTourCheckpointIndex === undefined
-        || currentTourIndex !== tour.index
-    );
-
-    React.useEffect(() => {
-        if (!isTourStarted) {
-            actions.tours.tourStart(tour.index);
-        }
-    }, [currentTourIndex, currentTourIsStarted, currentTourCheckpointIndex]);
+    if (typeof activeTourCheckpointIndex === 'undefined') {
+        throw new Error(`Tour ${tourName} is loaded but no checkpoint is active.`);
+    }
 
     // watch geofences in background
     React.useEffect(() => {
-        if (isTourStarted && currentTourCheckpointIndex !== undefined) {
-            locationService.watchActiveCheckpoint(tour, currentTourCheckpointIndex);
-        }
-    }, [currentTourCheckpointIndex]);
+        locationService.watchActiveCheckpoint(activeTour, activeTourCheckpointIndex);
+    }, [activeTourCheckpointIndex]);
 
     // place next checkpoints in map
     const linkedMapGeoCircles = React.useMemo<JSX.Element[]>(() => {
-        return _Circles(tour, currentTourCheckpointIndex);
-    }, [tour, currentTourCheckpointIndex]);
-
-    // show loading screen until tour is activated in the state
-    if (!isTourStarted || currentTourCheckpointIndex === undefined) {
-        return <AppLoading />;
-    }
+        return _Circles(activeTour, activeTourCheckpointIndex);
+    }, [activeTour, activeTourCheckpointIndex]);
 
     return (
         <MapView style={ STYLES.map } initialRegion={ INITIAL_REGION } showsUserLocation>
@@ -114,7 +97,7 @@ const TourMap: ReactNavFC<StateProps, TourScreenProps> = (props) => {
     );
 };
 TourMap.navigationOptions = ({ navigation }): { title: string } => {
-    const tour = navigation.getParam('tour');
-    return { title: tour.name };
+    const tourName = navigation.getParam('tourName');
+    return { title: tourName };
 };
 export default connect(mapStateToProps)(TourMap);

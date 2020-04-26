@@ -5,13 +5,6 @@ import { Text, Button } from 'native-base';
 import { ROUTE_NAMES, STORAGE_KEYS } from '../../constants';
 import { ReactNavFC, ReactNavProp } from '../../types';
 import TourList from './TourList';
-import { TourModel } from '../../store/tours-store';
-
-
-// navigation params passed to Tour child components
-export interface TourScreenProps {
-    readonly tour: TourModel;
-}
 
 
 async function logout(navigation: ReactNavProp): Promise<void> {

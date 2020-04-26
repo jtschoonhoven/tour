@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { View, StyleSheet } from 'react-native';
 import {
     Card,
@@ -12,9 +13,12 @@ import {
     Footer,
 } from 'native-base';
 
-import { TourScreenProps } from './Tours';
+import actions from '../../store/actions';
+import AppLoading from '../common/AppLoading';
+import { TourMapNavParams } from './TourMap';
 import { ReactNavFC } from '../../types';
 import { ROUTE_NAMES } from '../../constants';
+import { AppState } from '../../store/store';
 
 
 const STYLES = StyleSheet.create({
@@ -38,8 +42,45 @@ const STYLES = StyleSheet.create({
     },
 });
 
-const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
-    const tour = navigation.getParam('tour');
+
+export interface TourNavParams {
+    tourIndex: number;
+    tourName: string;
+}
+
+interface StateProps {
+    activeTourIndex?: number;
+    activeTourName?: string;
+}
+
+function mapStateToProps(state: AppState): StateProps {
+    return {
+        activeTourIndex: state.tours.currentTour?.toursIndex,
+        activeTourName: state.tours.currentTour?.tourName,
+    };
+}
+
+
+const Tour: ReactNavFC<StateProps, TourNavParams> = ({ navigation, activeTourIndex, activeTourName }) => {
+    const navTourIndex = navigation.getParam('tourIndex');
+    const navTourName = navigation.getParam('tourName');
+    const isTourActive = navTourIndex === activeTourIndex;
+
+
+    React.useEffect(() => {
+        if (!isTourActive) {
+            actions.tours.tourStart(navTourIndex);
+        }
+    }, [activeTourIndex, navTourIndex]);
+
+    if (!isTourActive) {
+        return <AppLoading />;
+    }
+
+    function onPress(): void {
+        navigation.navigate<TourMapNavParams>(ROUTE_NAMES.TOUR_MAP, { tourName: navTourName });
+    }
+
     return (
         <View style={ { flex: 1 } }>
             <Container>
@@ -50,8 +91,8 @@ const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
                                 <View style={ STYLES.cardItemImageView }>
                                     <Icon name="images" style={ STYLES.cardItemImageIcon } />
                                 </View>
-                                <Text>{ tour.name }</Text>
-                                <Text note>{ tour.name }</Text>
+                                <Text>{ activeTourName }</Text>
+                                <Text note>{ activeTourName }</Text>
                             </Body>
                         </Left>
                     </CardItem>
@@ -61,7 +102,7 @@ const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
                 <Button
                     full
                     style={ STYLES.footerButton }
-                    onPress={ (): void => { navigation.navigate(ROUTE_NAMES.TOUR_MAP, { tour }); } }
+                    onPress={ onPress }
                 >
                     <Text>Launch</Text>
                 </Button>
@@ -70,7 +111,7 @@ const Tour: ReactNavFC<{}, TourScreenProps> = ({ navigation }) => {
     );
 };
 Tour.navigationOptions = ({ navigation }): { title: string } => {
-    const tour = navigation.getParam('tour');
-    return { title: tour.name };
+    const tourName = navigation.getParam('tourName');
+    return { title: tourName };
 };
-export default Tour;
+export default connect(mapStateToProps)(Tour);

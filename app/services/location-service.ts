@@ -2,7 +2,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import get from 'lodash/get';
 
-import { actions } from '../store';
+import actions from '../store/actions';
 import { TourModel, CheckpointModel, GeoCircle, RegionId } from '../store/tours-store';
 
 
