@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { Dimensions } from 'react-native';
+import { Region, LatLng } from 'react-native-maps';
 import get from 'lodash/get';
 
 import actions from '../store/actions';
@@ -10,7 +12,8 @@ const GEOFENCE_BACKGROUND_TASK_NAME = '__tour__';
 
 
 /**
- * Define system-level background tasks to monitor. MUST BE CALLED IN GLOBAL SCOPE ON APP LOAD.
+ * Define system-level background tasks to monitor.
+ * NOTE: MUST BE CALLED IN GLOBAL SCOPE ON APP LOAD.
  * https://docs.expo.io/versions/v37.0.0/sdk/task-manager/#taskmanagerdefinetasktaskname-task
  */
 function defineBackgroundTasks(): void {
@@ -67,6 +70,15 @@ function getLinkedGeometries(tour: TourModel, checkpointIndex: number): GeoCircl
 
 
 /**
+ * Same as getLinkedGeometries but drops the `radius` property to return a list of LatLng objects.
+ */
+function getLinkedGeometriesLatLng(tour: TourModel, checkpointIndex: number): LatLng[] {
+    const linkedGeometries = getLinkedGeometries(tour, checkpointIndex);
+    return linkedGeometries.map((geom) => { return { latitude: geom.lat, longitude: geom.lng }; });
+}
+
+
+/**
  * Parse a CheckpointModel and return an array of LocationRegions for all linked geometries.
  */
 function _parseCheckpointAsGeofenceRegions(tour: TourModel, checkpointIndex: number): Location.LocationRegion[] {
@@ -101,9 +113,33 @@ function watchActiveCheckpoint(tour: TourModel, checkpointIndex: number): Promis
 }
 
 
+/**
+ * Generate a Region object given a point and radius in meters.
+ * NOTE: This is a lazy calculation based on a bad example which assumes the device is in portriat orientation.
+ * https://github.com/react-native-community/react-native-maps/blob/master/example/examples/DisplayLatLng.js#L12
+ */
+function getRegion({ lat, lng, radiusMeters = 1000 }: { lat: number; lng: number; radiusMeters?: number }): Region {
+    // latitudeDelta: the amount of north-to-south distance (measured in degrees) to display on the map.
+    // Unlike longitudinal distances, which vary based on the latitude, one degree of latitude is always
+    // approximately 111 kilometers (69 miles).
+    const { width, height } = Dimensions.get('window');
+    const aspectRatio = width / height;
+    const latitudeDelta = radiusMeters / 111000;
+    const longitudeDelta = latitudeDelta * aspectRatio;
+    return {
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta,
+        longitudeDelta,
+    };
+}
+
+
 export default {
     getLinkedGeometries,
     getLinkedCheckpoints,
+    getLinkedGeometriesLatLng,
     watchActiveCheckpoint,
     defineBackgroundTasks,
+    getRegion,
 };
