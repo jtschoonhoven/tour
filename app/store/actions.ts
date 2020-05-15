@@ -4,6 +4,7 @@ import store from './store';
 import toursStore from './tours-store';
 import twineService from '../services/twine-service';
 import geoTest from '../fixtures/tours/geo-test.json';
+import locationStore from './location-store';
 
 
 /**
@@ -11,6 +12,7 @@ import geoTest from '../fixtures/tours/geo-test.json';
  */
 const actions = {
     tours: bindActionCreators(toursStore.actions, store.dispatch),
+    location: bindActionCreators(locationStore.actions, store.dispatch),
 };
 export default actions;
 

@@ -10,6 +10,13 @@ import { TourModel, CheckpointModel, GeoCircle, RegionId } from '../store/tours-
 
 const GEOFENCE_BACKGROUND_TASK_NAME = '__tour__';
 
+const DEFAULT_LOCATION_OPTIONS: Location.LocationOptions = {
+    accuracy: Location.Accuracy.Highest,
+    mayShowUserSettingsDialog: true,
+    maximumAge: 10000,
+    timeout: 10000,
+};
+
 
 /**
  * Define system-level background tasks to monitor.
@@ -135,11 +142,34 @@ function getRegion({ lat, lng, radiusMeters = 1000 }: { lat: number; lng: number
 }
 
 
+async function isLocationServiceEnabled(): Promise<boolean> {
+    const isEnabled = await Location.hasServicesEnabledAsync();
+    if (isEnabled) {
+        return true;
+    }
+    try {
+        await Location.getCurrentPositionAsync(DEFAULT_LOCATION_OPTIONS);
+        return true;
+    }
+    catch (err) {
+        // Handle the anticipated error and return false
+        if (err.code === 'E_LOCATION_SETTINGS_UNSATISFIED') {
+            return false;
+        }
+        // Do not handle an unanticipated error
+        console.error(err.code === 'E_LOCATION_SETTINGS_UNSATISFIED');
+        throw new Error(err);
+    }
+}
+
+
 export default {
+    DEFAULT_LOCATION_OPTIONS,
     getLinkedGeometries,
     getLinkedCheckpoints,
     getLinkedGeometriesLatLng,
     watchActiveCheckpoint,
     defineBackgroundTasks,
     getRegion,
+    isLocationServiceEnabled,
 };

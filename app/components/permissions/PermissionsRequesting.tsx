@@ -1,35 +1,43 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import * as Permissions from 'expo-permissions';
 import { Button, Text } from 'native-base';
 
 import PermissionsBlocked from './PermissionsBlocked';
 import Alert from '../common/Alert';
 import AppView from '../common/AppView';
+import actions from '../../store/actions';
+import { AppState } from '../../store/store';
 
 
-interface Props {
-    setIsPermissionsGranted: (isGranted: boolean) => void;
+interface StateProps {
+    isLocationPermissionBlocked: boolean;
 }
 
 
-const PermissionsRequesting: React.FC<Props> = ({ setIsPermissionsGranted }: Props) => {
-    const [isPermissionsBlocked, setIsPermissionsBlocked] = React.useState<boolean>(false);
+function mapStateToProps(state: AppState): StateProps {
+    return {
+        isLocationPermissionBlocked: state.location.isLocationPermissionBlocked,
+    };
+}
 
+
+const PermissionsRequesting: React.FC<StateProps> = ({ isLocationPermissionBlocked }) => {
     async function requestPermission(): Promise<void> {
         try {
             const permissionResponse = await Permissions.askAsync(Permissions.LOCATION);
             const isGranted = permissionResponse.status === 'granted';
-            setIsPermissionsGranted(isGranted);
-            setIsPermissionsBlocked(!isGranted);
+            actions.location.setIsLocationPermissionGranted(isGranted);
+            actions.location.setIsLocationPermissionBlocked(!isGranted);
         }
         catch (err) {
             console.error(`Permissions.askAsync failed:\n${err}`);
-            setIsPermissionsGranted(false);
-            setIsPermissionsBlocked(true);
+            actions.location.setIsLocationPermissionGranted(false);
+            actions.location.setIsLocationPermissionBlocked(true);
         }
     }
 
-    if (isPermissionsBlocked) {
+    if (isLocationPermissionBlocked) {
         return <PermissionsBlocked />;
     }
 
@@ -44,4 +52,4 @@ const PermissionsRequesting: React.FC<Props> = ({ setIsPermissionsGranted }: Pro
         </AppView>
     );
 };
-export default PermissionsRequesting;
+export default connect(mapStateToProps)(PermissionsRequesting);

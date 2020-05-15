@@ -1,11 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import MapView, { Circle, Region, EdgePadding } from 'react-native-maps';
-import { StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
+import { CodedError } from '@unimodules/core';
+import { connect } from 'react-redux';
+import { StyleSheet } from 'react-native';
 
-import { ReactNavFC } from '../../types';
+import actions from '../../store/actions';
 import locationService from '../../services/location-service';
+import { ReactNavFC } from '../../types';
 import { TourModel } from '../../store/tours-store';
 import { AppState } from '../../store/store';
 
@@ -102,9 +104,10 @@ function _onMapReady(mapRef: React.RefObject<MapView>, tour: TourModel, checkpoi
 }
 
 
-function _onGetCurrentPositionAsyncFailure(error: Error): void {
-    // TODO: actually handle the error
-    console.error(`Failed to access user location! Is the GPS on? ${error.message}`);
+function _onGetCurrentPositionAsyncFailure(error: CodedError): void {
+    console.warn(`Failed to access user location! Is the GPS on? ${error.code}: ${error.message}`);
+    actions.location.setIsLocationServiceEnabled(false);
+    actions.location.setIsLocationPermissionLoading(false);
 }
 
 
@@ -136,10 +139,8 @@ const TourMap: ReactNavFC<StateProps, TourMapNavParams> = (props) => {
 
     React.useEffect(() => {
         let innerTimeoutId: NodeJS.Timeout;
-        const userCoordsPromise = Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Highest,
-            maximumAge: 10000,
-        }).catch(_onGetCurrentPositionAsyncFailure);
+        const userCoordsPromise = Location.getCurrentPositionAsync(locationService.DEFAULT_LOCATION_OPTIONS)
+            .catch(_onGetCurrentPositionAsyncFailure);
         const outerTimeoutId = setTimeout(() => {
             userCoordsPromise.then((location) => {
                 if (!location) {
