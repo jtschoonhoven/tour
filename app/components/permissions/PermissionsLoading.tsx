@@ -6,9 +6,9 @@ import AppLoading from '../common/AppLoading';
 import PermissionsRequesting from './PermissionsRequesting';
 import PermissionsDisabled from './PermissionsDisabled';
 import actions from '../../store/actions';
+import navigationService from '../../services/navigation-service';
 import locationService from '../../services/location-service';
 import { ROUTE_NAMES } from '../../constants';
-import { ReactNavFC, ReactNavProp } from '../../types';
 import { AppState } from '../../store/store';
 
 
@@ -40,7 +40,7 @@ async function checkLocationPermissionGranted(isAlreadyGranted: boolean): Promis
 }
 
 
-async function checkLocationServiceEnabled(navigation: ReactNavProp, isPermissionGranted: boolean): Promise<void> {
+async function checkLocationServiceEnabled(isPermissionGranted: boolean): Promise<void> {
     if (!isPermissionGranted) {
         return;
     }
@@ -48,14 +48,13 @@ async function checkLocationServiceEnabled(navigation: ReactNavProp, isPermissio
     actions.location.setIsLocationServiceEnabled(isEnabled);
     if (isEnabled) {
         actions.location.setIsLocationPermissionLoading(false);
-        navigation.navigate(ROUTE_NAMES.AUTH_LOADING);
+        navigationService.navigate(ROUTE_NAMES.AUTH_LOADING);
     }
 }
 
 
-const PermissionsLoading: ReactNavFC<StateProps> = (props) => {
+const PermissionsLoading: React.FC<StateProps> = (props) => {
     const {
-        navigation,
         isLocationPermissionGranted,
         isLocationPermissionLoading,
         isLocationServiceEnabled,
@@ -68,8 +67,10 @@ const PermissionsLoading: ReactNavFC<StateProps> = (props) => {
 
     // Check whether location services are enabled and (if enabled) redirect to auth view
     React.useEffect(() => {
-        checkLocationServiceEnabled(navigation, isLocationPermissionGranted);
-    }, [isLocationPermissionGranted]);
+        if (isLocationPermissionGranted) {
+            checkLocationServiceEnabled(isLocationPermissionGranted);
+        }
+    });
 
     // Show view to request permissions if not already granted
     if (!isLocationPermissionLoading && !isLocationPermissionGranted) {

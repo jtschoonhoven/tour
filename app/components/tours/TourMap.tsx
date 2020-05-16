@@ -1,15 +1,16 @@
 import React from 'react';
-import MapView, { Circle, Region, EdgePadding } from 'react-native-maps';
+import MapView, { Circle, Region, EdgePadding, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { CodedError } from '@unimodules/core';
 import { connect } from 'react-redux';
 import { StyleSheet } from 'react-native';
 
 import actions from '../../store/actions';
 import locationService from '../../services/location-service';
+import navigationService from '../../services/navigation-service';
 import { ReactNavFC } from '../../types';
 import { TourModel } from '../../store/tours-store';
 import { AppState } from '../../store/store';
+import { ROUTE_NAMES } from '../../constants';
 
 
 const STYLES = StyleSheet.create({
@@ -26,13 +27,13 @@ export interface TourMapNavParams {
 
 
 const DEFAULT_EDGE_PADDING: EdgePadding = {
-    top: 100,
-    right: 100,
-    bottom: 100,
-    left: 100,
+    top: 200,
+    right: 200,
+    bottom: 200,
+    left: 200,
 };
 
-const ANIMATION_DELAY_MS = 2000;
+const ANIMATION_DELAY_MS = 3000;
 
 const DEFAULT_MAP_FIT_OPTS = {
     animated: true,
@@ -104,10 +105,46 @@ function _onMapReady(mapRef: React.RefObject<MapView>, tour: TourModel, checkpoi
 }
 
 
-function _onGetCurrentPositionAsyncFailure(error: CodedError): void {
-    console.warn(`Failed to access user location! Is the GPS on? ${error.code}: ${error.message}`);
-    actions.location.setIsLocationServiceEnabled(false);
-    actions.location.setIsLocationPermissionLoading(false);
+function _zoomMapToFrame(mapRef: React.RefObject<MapView>, linkedGeometriesLatLng: Array<LatLng>): () => void {
+    let innerTimeoutId: NodeJS.Timeout;
+
+    // Get the user's current coordinates
+    const userCoordsPromise = Location.getCurrentPositionAsync(locationService.DEFAULT_LOCATION_OPTIONS)
+        .catch((err) => {
+            // Handle the expected error if location services are disabled
+            if (err.code === 'E_LOCATION_SETTINGS_UNSATISFIED') {
+                actions.location.setIsLocationServiceEnabled(false);
+                actions.location.setIsLocationPermissionLoading(true);
+                navigationService.navigate(ROUTE_NAMES.PERMISSIONS_LOADING);
+                return;
+            }
+            // Do not handle an unanticipated error
+            throw new Error(err);
+        });
+
+    // Wait for outer timeout then zoom to user location
+    const outerTimeoutId = setTimeout(() => {
+        userCoordsPromise.then((location) => {
+            if (!location) {
+                return;
+            }
+            const { latitude, longitude } = location.coords;
+            mapRef.current?.fitToCoordinates([{ latitude, longitude }], DEFAULT_MAP_FIT_OPTS);
+
+            // Wait for inner timeout then zoom to frame user with checkpoints
+            innerTimeoutId = setTimeout(() => {
+                mapRef.current?.fitToCoordinates(
+                    [{ latitude, longitude }, ...linkedGeometriesLatLng],
+                    DEFAULT_MAP_FIT_OPTS,
+                );
+            }, ANIMATION_DELAY_MS);
+        });
+    }, ANIMATION_DELAY_MS);
+
+    return (): void => {
+        clearTimeout(innerTimeoutId);
+        clearTimeout(outerTimeoutId);
+    };
 }
 
 
@@ -138,28 +175,7 @@ const TourMap: ReactNavFC<StateProps, TourMapNavParams> = (props) => {
     }, [activeTour.index, activeTourCheckpointIndex]);
 
     React.useEffect(() => {
-        let innerTimeoutId: NodeJS.Timeout;
-        const userCoordsPromise = Location.getCurrentPositionAsync(locationService.DEFAULT_LOCATION_OPTIONS)
-            .catch(_onGetCurrentPositionAsyncFailure);
-        const outerTimeoutId = setTimeout(() => {
-            userCoordsPromise.then((location) => {
-                if (!location) {
-                    return;
-                }
-                const { latitude, longitude } = location.coords;
-                mapRef.current?.fitToCoordinates([{ latitude, longitude }], DEFAULT_MAP_FIT_OPTS);
-                innerTimeoutId = setTimeout(() => {
-                    mapRef.current?.fitToCoordinates(
-                        [{ latitude, longitude }, ...linkedGeometriesLatLng],
-                        DEFAULT_MAP_FIT_OPTS,
-                    );
-                }, ANIMATION_DELAY_MS);
-            });
-        }, ANIMATION_DELAY_MS);
-        return (): void => {
-            clearTimeout(innerTimeoutId);
-            clearTimeout(outerTimeoutId);
-        };
+        return _zoomMapToFrame(mapRef, linkedGeometriesLatLng);
     }, [activeTour.index, activeTourCheckpointIndex]);
 
     // Place next checkpoints in map

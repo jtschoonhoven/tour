@@ -98,6 +98,7 @@ function _parseCheckpointAsGeofenceRegions(tour: TourModel, checkpointIndex: num
                 longitude: geoCircle.lng,
                 radius: geoCircle.radius,
                 notifyOnExit: false,
+                notifyOnEnter: true,
             };
         });
     });
@@ -142,6 +143,11 @@ function getRegion({ lat, lng, radiusMeters = 1000 }: { lat: number; lng: number
 }
 
 
+/**
+ * Resolve to true if location services are available.
+ * Attempts to prompt the user if not already enabled (device-specific).
+ * NOTE: An error will be thrown if location permissions have not been granted.
+ */
 async function isLocationServiceEnabled(): Promise<boolean> {
     const isEnabled = await Location.hasServicesEnabledAsync();
     if (isEnabled) {
@@ -157,7 +163,6 @@ async function isLocationServiceEnabled(): Promise<boolean> {
             return false;
         }
         // Do not handle an unanticipated error
-        console.error(err.code === 'E_LOCATION_SETTINGS_UNSATISFIED');
         throw new Error(err);
     }
 }

@@ -20,6 +20,8 @@ export const ROUTE_NAMES = {
     PERMISSIONS_LOADING: 'PermissionsLoading',
 } as const;
 
+export type ROUTE_NAME = typeof ROUTE_NAMES[keyof typeof ROUTE_NAMES];
+
 // All keys stored in system storage
 export const STORAGE_KEYS = {
     USER_TOKEN: '@tour:userToken',

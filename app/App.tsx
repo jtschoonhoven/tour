@@ -9,11 +9,12 @@ import AppLoading from './components/common/AppLoading';
 import AppNavigator from './navigation';
 import store from './store/store';
 import locationService from './services/location-service';
+import navigationService from './services/navigation-service';
 import { ReactNavFC } from './types';
 
 
 locationService.defineBackgroundTasks(); // must be executed in global scope on app load
-const AppContainer = createAppContainer(AppNavigator);
+const NavigationContainer = createAppContainer(AppNavigator);
 
 
 /**
@@ -33,7 +34,7 @@ const App: ReactNavFC = () => {
     return (
         <Container>
             <Provider store={ store }>
-                <AppContainer />
+                <NavigationContainer ref={ (navRef): void => navigationService.receiveNavigatorRef(navRef) } />
             </Provider>
         </Container>
     );
