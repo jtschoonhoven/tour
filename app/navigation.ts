@@ -4,14 +4,14 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 
 import { ROUTE_NAMES } from './constants';
-import Tour from './components/tours/Tour';
+import TourPreview from './components/tours/TourPreview';
 import Tours from './components/tours/Tours';
 import Modal from './components/common/Modal';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import AuthLoading from './components/auth/AuthLoading';
 import NavHeader from './components/common/NavHeader';
-import TourMap from './components/tours/TourMap';
+import Tour from './components/tours/Tour';
 import PermissionsLoading from './components/permissions/PermissionsLoading';
 
 
@@ -21,8 +21,8 @@ import PermissionsLoading from './components/permissions/PermissionsLoading';
 const TourNavigator = createStackNavigator(
     {
         [ROUTE_NAMES.HOME]: Tours,
+        [ROUTE_NAMES.TOUR_PREVIEW]: TourPreview,
         [ROUTE_NAMES.TOUR]: Tour,
-        [ROUTE_NAMES.TOUR_MAP]: TourMap,
     },
     {
         initialRouteName: ROUTE_NAMES.HOME,

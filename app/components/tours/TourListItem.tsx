@@ -15,7 +15,7 @@ import actions from '../../store/actions';
 import { ROUTE_NAMES } from '../../constants';
 import { ReactNavFC } from '../../types';
 import { TourModel } from '../../store/tours-store';
-import { TourNavParams } from './Tour';
+import { TourPreviewNavParams } from './TourPreview';
 import { AppState } from '../../store/store';
 
 
@@ -54,24 +54,31 @@ interface Props extends StateProps {
  * A single Tour card in the TourList view.
  */
 const TourListItem: ReactNavFC<Props> = ({ navigation, tour, activeTourIndex }) => {
-    const [isLoadingTour, setIsLoadingTour] = React.useState<boolean>(false);
+    const [navigationPending, setNavigationPending] = React.useState(false);
+    const tourIsActive = tour.index === activeTourIndex;
 
-    // detect when screen is in focus and reactivate buttons
+    // Reset navigationPending when focus returns to this view
     React.useEffect(() => {
         const listener = navigation.addListener('didFocus', () => {
-            setIsLoadingTour(false);
+            setNavigationPending(false);
         });
         return (): void => { listener.remove(); };
     }, []);
 
-    // load tour on click and navigate
+    // On press, queue up a navigation action for when tour is active in global state
     const onPress = (): void => {
-        setIsLoadingTour(true);
-        if (tour.index !== activeTourIndex) {
+        if (!tourIsActive) {
             actions.tours.tourStart(tour.index);
         }
-        navigation.navigate<TourNavParams>(ROUTE_NAMES.TOUR, { tourIndex: tour.index, tourName: tour.name });
+        setNavigationPending(true);
     };
+
+    // If navigation action is queued, navigate as soon as tour is active in global state
+    React.useEffect(() => {
+        if (navigationPending && tourIsActive) {
+            navigation.navigate<TourPreviewNavParams>(ROUTE_NAMES.TOUR_PREVIEW, { title: tour.name });
+        }
+    }, [navigationPending, activeTourIndex]);
 
     return (
         <TouchableHighlight onPress={ onPress }>
@@ -84,8 +91,8 @@ const TourListItem: ReactNavFC<Props> = ({ navigation, tour, activeTourIndex }) 
                             <View style={ STYLES.cardItemImageView }>
                                 <Icon name="images" style={ STYLES.cardItemImageIcon } />
                             </View>
-                            <Button onPress={ onPress } disabled={ isLoadingTour }>
-                                <Text>{ tour.name }</Text>
+                            <Button onPress={ onPress } disabled={ navigationPending }>
+                                <Text>{ navigationPending ? 'Loading' : tour.name }</Text>
                             </Button>
                         </Body>
                     </Left>

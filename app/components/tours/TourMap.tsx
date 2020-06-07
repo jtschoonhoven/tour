@@ -1,15 +1,13 @@
 import React from 'react';
 import MapView, { Circle, Region, EdgePadding, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { connect } from 'react-redux';
 import { StyleSheet } from 'react-native';
 
 import actions from '../../store/actions';
 import locationService from '../../services/location-service';
 import navigationService from '../../services/navigation-service';
-import { ReactNavFC } from '../../types';
 import { TourModel } from '../../store/tours-store';
-import { AppState } from '../../store/store';
+
 import { ROUTE_NAMES } from '../../constants';
 
 
@@ -19,11 +17,6 @@ const STYLES = StyleSheet.create({
         height: '100%',
     },
 });
-
-
-export interface TourMapNavParams {
-    tourName: string;
-}
 
 
 const DEFAULT_EDGE_PADDING: EdgePadding = {
@@ -39,28 +32,6 @@ const DEFAULT_MAP_FIT_OPTS = {
     animated: true,
     edgePadding: DEFAULT_EDGE_PADDING,
 };
-
-
-interface StateProps {
-    activeTourCheckpointIndex?: number;
-    activeTourIndex?: number;
-    activeTour?: TourModel;
-}
-
-function mapStateToProps(state: AppState): StateProps {
-    let activeTour: TourModel | undefined;
-    const activeTourIndex = state.tours.currentTour?.toursIndex;
-
-    if (typeof activeTourIndex !== 'undefined') {
-        activeTour = state.tours.tours[activeTourIndex];
-    }
-
-    return {
-        activeTour,
-        activeTourIndex,
-        activeTourCheckpointIndex: state.tours.currentTour?.checkpointIndex,
-    };
-}
 
 
 /**
@@ -148,40 +119,37 @@ function _zoomMapToFrame(mapRef: React.RefObject<MapView>, linkedGeometriesLatLn
 }
 
 
-const TourMap: ReactNavFC<StateProps, TourMapNavParams> = (props) => {
-    const { navigation, activeTourCheckpointIndex, activeTour, activeTourIndex } = props;
-    const tourName = navigation.getParam('tourName');
+interface Props {
+    tour: TourModel;
+    checkpointIndex: number;
+}
+
+
+const TourMap: React.FC<Props> = (props) => {
+    const { checkpointIndex, tour } = props;
     const mapRef = React.createRef<MapView>();
 
-    if (!activeTour) {
-        throw new Error(`Tour ${tourName} at index ${activeTourIndex} is not active.`);
-    }
-
-    if (typeof activeTourCheckpointIndex === 'undefined') {
-        throw new Error(`Tour ${tourName} is loaded but no checkpoint is active.`);
-    }
-
     const linkedGeometriesLatLng = React.useMemo(() => {
-        return locationService.getLinkedGeometriesLatLng(activeTour, activeTourCheckpointIndex);
-    }, [activeTour.index, activeTourCheckpointIndex]);
+        return locationService.getLinkedGeometriesLatLng(tour, checkpointIndex);
+    }, [tour.index, checkpointIndex]);
 
     const initialRegion = React.useMemo(() => {
-        return _getInitialRegion(activeTour, activeTourCheckpointIndex);
-    }, [activeTour.index, activeTourCheckpointIndex]);
+        return _getInitialRegion(tour, checkpointIndex);
+    }, [tour.index, checkpointIndex]);
 
     // Watch geofences in background
     React.useEffect((): void => {
-        locationService.watchActiveCheckpoint(activeTour, activeTourCheckpointIndex);
-    }, [activeTour.index, activeTourCheckpointIndex]);
+        locationService.watchActiveCheckpoint(tour, checkpointIndex);
+    }, [tour.index, checkpointIndex]);
 
     React.useEffect(() => {
         return _zoomMapToFrame(mapRef, linkedGeometriesLatLng);
-    }, [activeTour.index, activeTourCheckpointIndex]);
+    }, [tour.index, checkpointIndex]);
 
     // Place next checkpoints in map
     const linkedMapGeoCircles = React.useMemo<JSX.Element[]>(() => {
-        return _Circles(activeTour, activeTourCheckpointIndex);
-    }, [activeTour.index, activeTourCheckpointIndex]);
+        return _Circles(tour, checkpointIndex);
+    }, [tour.index, checkpointIndex]);
 
     return (
         <MapView
@@ -194,14 +162,10 @@ const TourMap: ReactNavFC<StateProps, TourMapNavParams> = (props) => {
             toolbarEnabled={ false } // Android only. If false will hide 'Navigate' and 'Open in Maps' buttons on press
             loadingEnabled // If true a loading indicator will show while the map is loading.
             showsUserLocation
-            onMapReady={ (): void => { _onMapReady(mapRef, activeTour, activeTourCheckpointIndex); } }
+            onMapReady={ (): void => { _onMapReady(mapRef, tour, checkpointIndex); } }
         >
             { linkedMapGeoCircles }
         </MapView>
     );
 };
-TourMap.navigationOptions = ({ navigation }): { title: string } => {
-    const tourName = navigation.getParam('tourName');
-    return { title: tourName };
-};
-export default connect(mapStateToProps)(TourMap);
+export default TourMap;
