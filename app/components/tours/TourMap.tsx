@@ -6,9 +6,10 @@ import { StyleSheet } from 'react-native';
 import actions from '../../store/actions';
 import locationService from '../../services/location-service';
 import navigationService from '../../services/navigation-service';
-import { TourModel } from '../../store/tours-store';
+import { TourModel, CheckpointModel } from '../../store/tours-store';
 
 import { ROUTE_NAMES } from '../../constants';
+import MarkerText from '../map/Marker-Text';
 
 
 const STYLES = StyleSheet.create({
@@ -37,10 +38,7 @@ const DEFAULT_MAP_FIT_OPTS = {
 /**
  * Return an array of Circle elements to render within the map.
  */
-const _Circles = (tour: TourModel, checkpointIndex?: number): JSX.Element[] => {
-    if (checkpointIndex === undefined) {
-        return [];
-    }
+const _Circles = (tour: TourModel, checkpointIndex: number): JSX.Element[] => {
     const linkedGeometries = locationService.getLinkedGeometries(tour, checkpointIndex);
     return linkedGeometries.map((geom, idx) => {
         const geoCircleProps = {
@@ -49,6 +47,19 @@ const _Circles = (tour: TourModel, checkpointIndex?: number): JSX.Element[] => {
             strokeWidth: StyleSheet.hairlineWidth,
         };
         return <Circle { ...geoCircleProps } key={ idx.toString() } />;
+    });
+};
+
+
+const _Markers = (tour: TourModel, checkpointIndex: number): JSX.Element[] => {
+    const linkedMarkers = locationService.getLinkedMarkers(tour, checkpointIndex);
+    return linkedMarkers.map((marker, idx) => {
+        const markerProps = {
+            coordinate: { latitude: marker.lat, longitude: marker.lng },
+            title: marker.title,
+            strokeWidth: StyleSheet.hairlineWidth,
+        };
+        return <MarkerText { ...markerProps } key={ idx.toString() } />;
     });
 };
 
@@ -121,35 +132,39 @@ function _zoomMapToFrame(mapRef: React.RefObject<MapView>, linkedGeometriesLatLn
 
 interface Props {
     tour: TourModel;
-    checkpointIndex: number;
+    checkpoint: CheckpointModel;
 }
 
 
 const TourMap: React.FC<Props> = (props) => {
-    const { checkpointIndex, tour } = props;
+    const { checkpoint, tour } = props;
     const mapRef = React.createRef<MapView>();
 
     const linkedGeometriesLatLng = React.useMemo(() => {
-        return locationService.getLinkedGeometriesLatLng(tour, checkpointIndex);
-    }, [tour.index, checkpointIndex]);
+        return locationService.getLinkedGeometriesLatLng(tour, checkpoint.index);
+    }, [tour.index, checkpoint.index]);
 
     const initialRegion = React.useMemo(() => {
-        return _getInitialRegion(tour, checkpointIndex);
-    }, [tour.index, checkpointIndex]);
+        return _getInitialRegion(tour, checkpoint.index);
+    }, [tour.index, checkpoint.index]);
 
     // Watch geofences in background
     React.useEffect((): void => {
-        locationService.watchActiveCheckpoint(tour, checkpointIndex);
-    }, [tour.index, checkpointIndex]);
+        locationService.watchActiveCheckpoint(tour, checkpoint.index);
+    }, [tour.index, checkpoint.index]);
 
     React.useEffect(() => {
         return _zoomMapToFrame(mapRef, linkedGeometriesLatLng);
-    }, [tour.index, checkpointIndex]);
+    }, [tour.index, checkpoint.index]);
 
     // Place next checkpoints in map
     const linkedMapGeoCircles = React.useMemo<JSX.Element[]>(() => {
-        return _Circles(tour, checkpointIndex);
-    }, [tour.index, checkpointIndex]);
+        return _Circles(tour, checkpoint.index);
+    }, [tour.index, checkpoint.index]);
+
+    const linkedMapMarkers = React.useMemo<JSX.Element[]>(() => {
+        return _Markers(tour, checkpoint.index);
+    }, [tour.index, checkpoint.index]);
 
     return (
         <MapView
@@ -162,9 +177,10 @@ const TourMap: React.FC<Props> = (props) => {
             toolbarEnabled={ false } // Android only. If false will hide 'Navigate' and 'Open in Maps' buttons on press
             loadingEnabled // If true a loading indicator will show while the map is loading.
             showsUserLocation
-            onMapReady={ (): void => { _onMapReady(mapRef, tour, checkpointIndex); } }
+            onMapReady={ (): void => { _onMapReady(mapRef, tour, checkpoint.index); } }
         >
             { linkedMapGeoCircles }
+            { linkedMapMarkers }
         </MapView>
     );
 };

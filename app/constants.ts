@@ -11,7 +11,7 @@ export const ROUTE_NAMES = {
     HOME: 'Home',
     TOUR: 'Tour',
     TOUR_PREVIEW: 'TourPreview',
-    MODAL: 'Modal',
+    MODAL_TOUR_COMPLETE: 'ModalTourComplete',
     MAIN: 'Main',
     LOGIN: 'Login',
     SIGNUP: 'Signup',

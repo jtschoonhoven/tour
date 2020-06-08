@@ -1,5 +1,10 @@
-import { CheckpointModel, GeoCircle, TourModel } from '../store/tours-store';
+import { CheckpointModel, GeoCircle, TourModel, GeoMarker } from '../store/tours-store';
 
+
+interface LatLng {
+    lat: number;
+    lng: number;
+}
 
 interface Hook {
     hookName: string;
@@ -56,12 +61,48 @@ function _parseJsonStringAsGeoCircle(jsonString: string): GeoCircle {
 }
 
 
+function _parseJsonStringAsGeoMarker(jsonString: string, defaultLatLng?: LatLng): GeoMarker {
+    try {
+        // parse JSON from string
+        const maybeGeoMarker = JSON.parse(jsonString);
+        if (typeof (maybeGeoMarker as GeoMarker).title === 'string') {
+            if (
+                typeof (maybeGeoMarker as GeoMarker).lat === 'number'
+                && typeof (maybeGeoMarker as GeoMarker).lng === 'number'
+            ) {
+                const { lat, lng, title } = maybeGeoMarker;
+                return { type: 'marker', lat, lng, title };
+            }
+            if (defaultLatLng) {
+                return { type: 'marker', title: maybeGeoMarker.title, ...defaultLatLng };
+            }
+        }
+    }
+    catch (err) {
+        throw new Error(`Failed to parse invalid json string as GeoMarker:\n${err.message}:\n${jsonString}`);
+    }
+    throw new Error(`Failed to create GeoMarker from JSON string with invalid properties:\n${jsonString}.`);
+}
+
+
 /**
  * Parse geometries in this passage to an array of geocircles.
  */
 function _getGeometriesForPassage(passage: Passage): Array<GeoCircle> {
     const geoHooks = passage.hooks.filter((hook) => hook.hookName.toLowerCase() === 'geocircle');
     return geoHooks.map((geoHook) => _parseJsonStringAsGeoCircle(geoHook.hookText));
+}
+
+
+function _getMarkersForPassage(passage: Passage, geometries: Array<GeoCircle>): Array<GeoMarker> {
+    const markerHooks = passage.hooks.filter((hook) => hook.hookName.toLowerCase() === 'marker');
+    let latLng: LatLng;
+    return markerHooks.map((markerHook, idx) => {
+        if (idx < geometries.length) {
+            latLng = { lat: geometries[idx].lat, lng: geometries[idx].lng };
+        }
+        return _parseJsonStringAsGeoMarker(markerHook.hookText, latLng);
+    });
 }
 
 
@@ -85,12 +126,16 @@ function _getLinkIndicesForPassage(passage: Passage, passages: Array<Passage>): 
 function parseTwineToJsonExport(input: TwineToJsonExport, index: number): TourModel {
     const { uuid, name, schemaName, schemaVersion, createdAtMs, passages } = input;
     const checkpoints: Array<CheckpointModel> = passages.map((passage, passageIndex) => {
+        const geometries = _getGeometriesForPassage(passage);
+        const markers = _getMarkersForPassage(passage, geometries);
+        const linkIndices = _getLinkIndicesForPassage(passage, passages);
         return {
             index: passageIndex,
             name: passage.name,
             text: passage.cleanText,
-            geometries: _getGeometriesForPassage(passage),
-            linkIndices: _getLinkIndicesForPassage(passage, passages),
+            geometries,
+            markers,
+            linkIndices,
         };
     });
     return {

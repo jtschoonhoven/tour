@@ -8,10 +8,18 @@ export interface GeoCircle {
     radius: number;
 }
 
+export interface GeoMarker {
+    type: 'marker';
+    lat: number;
+    lng: number;
+    title: string;
+}
+
 export interface CheckpointModel {
     name: string;
     text: string;
     geometries: Array<GeoCircle>;
+    markers: Array<GeoMarker>;
     linkIndices: Array<number>;
     index: number;
 }
@@ -37,13 +45,13 @@ export interface TourMeta {
 interface ToursState {
     tours: Array<TourModel>;
     currentTour?: TourMeta;
-    toursStarted: Array<TourMeta>;
+    toursStarted: { [tourIndex: number]: TourMeta };
 }
 
 const INITIAL_STATE: ToursState = {
     tours: [],
     currentTour: undefined,
-    toursStarted: [],
+    toursStarted: {},
 };
 
 
@@ -105,32 +113,60 @@ function loadReducer(state: ToursState, action: PayloadAction<TourModel>): Tours
 }
 
 
+function tourFinishedReducer(state: ToursState, action: PayloadAction<number>): ToursState {
+    const tourIndex = action.payload;
+    const { currentTour } = state;
+
+    if (!currentTour) {
+        throw new Error('Cannot mark the current tour finished when no tour is active!');
+    }
+    if (tourIndex !== currentTour.toursIndex) {
+        throw new Error(`Cannot complete #${tourIndex}: the current tour is #${currentTour.toursIndex}`);
+    }
+    return { ...state, currentTour };
+}
+
+
 function tourStartReducer(state: ToursState, action: PayloadAction<number>): ToursState {
     const tourIndex = action.payload;
 
-    // throw if tour index is out of bounds
+    // Throw if tour index is out of bounds
     if (tourIndex >= state.tours.length) {
         throw new Error(`Tour index "${tourIndex}" is out of bounds in tours list (len ${state.tours.length}).`);
     }
 
     const tour = state.tours[tourIndex];
 
-    // throw if tour is already started
+    // Throw if tour is already started
     if (state.currentTour && state.currentTour.toursIndex === tourIndex) {
         if (state.currentTour.isStarted) {
             throw new Error('Tour has already started!');
         }
     }
 
-    const tourMeta: TourMeta = {
-        toursIndex: tourIndex,
-        tourName: tour.name,
-        isStarted: true,
-        isFinished: false,
-        checkpointIndex: 0,
-    };
+    // If there is already an active tour, move it to toursStarted
+    const toursStarted = { ...state.toursStarted };
+    if (state.currentTour) {
+        toursStarted[state.currentTour.toursIndex] = state.currentTour;
+    }
 
-    return { ...state, currentTour: tourMeta };
+    // If this tour already exists in toursStarted, set currentTour from there
+    let currentTour: TourMeta;
+    if (tourIndex in toursStarted) {
+        currentTour = toursStarted[tourIndex];
+    }
+    else {
+        currentTour = {
+            toursIndex: tourIndex,
+            tourName: tour.name,
+            isStarted: true,
+            isFinished: false,
+            checkpointIndex: 0,
+        };
+    }
+
+
+    return { ...state, toursStarted, currentTour };
 }
 
 
@@ -177,5 +213,6 @@ export default createSlice({
         load: loadReducer,
         enterCheckpoint: enterCheckpointReducer,
         tourStart: tourStartReducer,
+        tourFinished: tourFinishedReducer,
     },
 });

@@ -24,13 +24,9 @@ async function logout(navigation: ReactNavProp): Promise<void> {
  * Top-level view, primarily for browsing tours.
  */
 const Tours: ReactNavFC = ({ navigation }) => {
-    const modal = { title: 'Example modal' };
     return (
         <View style={ { flex: 1 } }>
             <TourList navigation={ navigation } />
-            <Button onPress={ (): void => { navigation.navigate(ROUTE_NAMES.MODAL, { modal }); } }>
-                <Text>Launch example modal</Text>
-            </Button>
             <Button onPress={ (): Promise<void> => logout(navigation) }>
                 <Text>Logout</Text>
             </Button>

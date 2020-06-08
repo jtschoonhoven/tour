@@ -5,7 +5,7 @@ import { Region, LatLng } from 'react-native-maps';
 import get from 'lodash/get';
 
 import actions from '../store/actions';
-import { TourModel, CheckpointModel, GeoCircle, RegionId } from '../store/tours-store';
+import { TourModel, CheckpointModel, GeoCircle, RegionId, GeoMarker } from '../store/tours-store';
 
 
 const GEOFENCE_BACKGROUND_TASK_NAME = '__tour__';
@@ -64,6 +64,15 @@ function getLinkedCheckpoints(tour: TourModel, checkpointIndex: number): Checkpo
         }
         return tour.checkpoints[linkIndex];
     });
+}
+
+
+/**
+ * Return a list of all geoMarkers that are contained in any linked checkpoint.
+ */
+function getLinkedMarkers(tour: TourModel, checkpointIndex: number): GeoMarker[] {
+    const linkedCheckpoints = getLinkedCheckpoints(tour, checkpointIndex);
+    return linkedCheckpoints.flatMap((linkedCheckpoint) => linkedCheckpoint.markers);
 }
 
 
@@ -170,6 +179,7 @@ async function isLocationServiceEnabled(): Promise<boolean> {
 
 export default {
     DEFAULT_LOCATION_OPTIONS,
+    getLinkedMarkers,
     getLinkedGeometries,
     getLinkedCheckpoints,
     getLinkedGeometriesLatLng,

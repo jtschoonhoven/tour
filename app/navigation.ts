@@ -2,17 +2,16 @@ import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 
-
 import { ROUTE_NAMES } from './constants';
 import TourPreview from './components/tours/TourPreview';
 import Tours from './components/tours/Tours';
-import Modal from './components/common/Modal';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import AuthLoading from './components/auth/AuthLoading';
 import NavHeader from './components/common/NavHeader';
 import Tour from './components/tours/Tour';
 import PermissionsLoading from './components/permissions/PermissionsLoading';
+import ModalTourComplete from './components/tours/ModalTourComplete';
 
 
 /**
@@ -48,7 +47,7 @@ const AuthNavigator = createBottomTabNavigator({
 const TourNavigatorWithModal = createStackNavigator(
     {
         [ROUTE_NAMES.MAIN]: TourNavigator,
-        [ROUTE_NAMES.MODAL]: Modal,
+        [ROUTE_NAMES.MODAL_TOUR_COMPLETE]: ModalTourComplete,
     },
     {
         initialRouteName: ROUTE_NAMES.MAIN,

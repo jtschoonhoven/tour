@@ -9,6 +9,7 @@ export type ReactNavProp<
     NavState=unknown
 > = NavigationScreenProp<NavigationState & NavState, NavParams>;
 
+
 // Utility type that extends React.FC with the navigationOptions property expected by react-navigation
 export interface ReactNavFC<
     Props=unknown,

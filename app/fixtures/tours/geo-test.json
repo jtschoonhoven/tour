@@ -2,36 +2,36 @@
   "uuid": "A0472E68-7822-4211-9F11-5CBD919162DC",
   "name": "GeoTest",
   "creator": "Twine",
-  "creatorVersion": "2.3.6",
+  "creatorVersion": "2.3.8",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1586362589608,
+  "createdAtMs": 1591581091976,
   "passages": [
     {
-      "name": "start",
+      "name": "The Journey Begins...",
       "tags": "",
       "id": "1",
-      "text": "Get to the choppa!\n\n[[checkpoint]]",
+      "text": "Quickly! Get to the safe zone before time runs out!\n\n[[The Journey Continues...]]",
       "links": [
         {
-          "linkText": "checkpoint",
-          "passageName": "checkpoint",
-          "original": "[[checkpoint]]"
+          "linkText": "The Journey Continues...",
+          "passageName": "The Journey Continues...",
+          "original": "[[The Journey Continues...]]"
         }
       ],
       "hooks": [],
-      "cleanText": "Get to the choppa!"
+      "cleanText": "Quickly! Get to the safe zone before time runs out!"
     },
     {
-      "name": "checkpoint",
+      "name": "The Journey Continues...",
       "tags": "",
       "id": "2",
-      "text": "You made it to the checkpoint. Go to the finish point.\n\n|geoCircle>[{ \"lat\": 37.76483, \"lng\": -122.4455, \"radius\": 100 }]\n\n[[finish]]",
+      "text": "You made it to the checkpoint. Go to the finish point.\n\n|geoCircle>[{ \"lat\": 37.76483, \"lng\": -122.4455, \"radius\": 100 }]\n|marker>[{ \"title\": \"Safe Zone\" }]\n\n[[The End of Your Journey]]",
       "links": [
         {
-          "linkText": "finish",
-          "passageName": "finish",
-          "original": "[[finish]]"
+          "linkText": "The End of Your Journey",
+          "passageName": "The End of Your Journey",
+          "original": "[[The End of Your Journey]]"
         }
       ],
       "hooks": [
@@ -39,24 +39,34 @@
           "hookName": "geoCircle",
           "hookText": "{ \"lat\": 37.76483, \"lng\": -122.4455, \"radius\": 100 }",
           "original": "|geoCircle>[{ \"lat\": 37.76483, \"lng\": -122.4455, \"radius\": 100 }]"
+        },
+        {
+          "hookName": "marker",
+          "hookText": "{ \"title\": \"Safe Zone\" }",
+          "original": "|marker>[{ \"title\": \"Safe Zone\" }]"
         }
       ],
       "cleanText": "You made it to the checkpoint. Go to the finish point."
     },
     {
-      "name": "finish",
+      "name": "The End of Your Journey",
       "tags": "",
       "id": "3",
-      "text": "The end.\n\n|geoCircle>[{ \"lat\": 37.7677421, \"lng\": -122.44145, \"radius\": 100 }]",
+      "text": "The end. Or is it?!\n\n|geoCircle>[{ \"lat\": 37.7677421, \"lng\": -122.44145, \"radius\": 100 }]\n|marker>[{ \"title\": \"Finish\" }]",
       "links": [],
       "hooks": [
         {
           "hookName": "geoCircle",
           "hookText": "{ \"lat\": 37.7677421, \"lng\": -122.44145, \"radius\": 100 }",
           "original": "|geoCircle>[{ \"lat\": 37.7677421, \"lng\": -122.44145, \"radius\": 100 }]"
+        },
+        {
+          "hookName": "marker",
+          "hookText": "{ \"title\": \"Finish\" }",
+          "original": "|marker>[{ \"title\": \"Finish\" }]"
         }
       ],
-      "cleanText": "The end."
+      "cleanText": "The end. Or is it?!"
     }
   ]
 }
