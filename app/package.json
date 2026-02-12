@@ -27,7 +27,7 @@
     "@unimodules/core": "^5.1.2",
     "@use-expo/font": "^2.0.0",
     "events": "^3.1.0",
-    "expo": "^37.0.6",
+    "expo": "^48.0.0",
     "expo-font": "~8.1.0",
     "expo-google-app-auth": "^8.0.0",
     "expo-intent-launcher": "~8.1.0",
